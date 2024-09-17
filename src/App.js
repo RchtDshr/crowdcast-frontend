@@ -1,24 +1,32 @@
-import logo from './logo.svg';
+import { BrowserRouter, Route, Routes, useLocation } from 'react-router-dom';
 import './App.css';
+import SidePanel from './Components/SidePanel';
+import SignIn from './Pages/Signin';
+
+function AppContent() {
+  const location = useLocation();
+  const isSignInPage = location.pathname === '/signin';
+
+  return (
+    <div className="app-container font-primary">
+      {!isSignInPage && <SidePanel />}
+      <main className="content">
+        <Routes>
+          <Route path="/signin" element={<SignIn />} />
+          {/* <Route path="/user" element={<User />} /> */}
+          {/* <Route path="/wallet" element={<Wallet />} /> */}
+          {/* <Route path="/createad" element={<CreateAd />} /> */}
+        </Routes>
+      </main>
+    </div>
+  );
+}
 
 function App() {
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <BrowserRouter>
+      <AppContent />
+    </BrowserRouter>
   );
 }
 
