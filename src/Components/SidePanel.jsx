@@ -1,5 +1,6 @@
 import React from 'react'
-import { CirclePlus, LayoutDashboard, LogOut, Wallet2 } from 'lucide-react';
+import { LayoutDashboard, LogOut, Megaphone, Wallet2 } from 'lucide-react';
+import { Link } from 'react-router-dom';
 
 export default function SidePanel() {
   return (
@@ -10,23 +11,25 @@ export default function SidePanel() {
       </h1>
       <div className='flex flex-col justify-between items-start h-full'>
 
-      
-      <div className="route text-md flex flex-col gap-6 items-start justify-center">
-        <div className="flex gap-3 items-start justify-center">
-          <LayoutDashboard /> Dashboard
+
+        <div className="route text-md flex flex-col gap-6 items-start justify-center">
+          <Link to='/' className='flex gap-3 items-start justify-center'>
+            <LayoutDashboard /> Dashboard
+          </Link>
+
+          <Link to='/create' className='flex gap-3 items-start justify-center'>
+            <Megaphone /> Create Ad
+          </Link>
+          <Link to='/wallet' className='flex gap-3 items-start justify-center'>
+            <Wallet2 /> Wallet
+          </Link>
+
         </div>
-        <div className="flex gap-3 items-start justify-center">
-          <CirclePlus /> Create Ad
+        <div className="logout">
+          <div className="flex gap-3 items-start justify-center">
+            <LogOut /> Logout
+          </div>
         </div>
-        <div className="flex gap-3 items-start justify-center">
-          <Wallet2 /> Wallet
-        </div>
-      </div>
-      <div className="logout">
-        <div className="flex gap-3 items-start justify-center">
-          <LogOut /> Logout
-        </div>
-      </div>
       </div>
     </div>
   )

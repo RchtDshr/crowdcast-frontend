@@ -9,7 +9,7 @@ export default function Signin() {
   };
 
   return (
-    <div className=' w-[100vw] h-[100vh] flex justify-center items-center'>
+    <div className='font-primary w-[100vw] h-[100vh] flex justify-center items-center'>
       <div className='bg-white w-[80vw] h-[60vh] shadow-lg rounded-lg flex justify-around px-12 py-20 gap-12'>
 
         <div className='signin-left flex flex-1 flex-col items-start justify-start gap-2'>
@@ -41,7 +41,7 @@ export default function Signin() {
             </div>
 
             <div className="flex items-center justify-end gap-6 mt-10">
-              <p className='text-sm font-bold text-primary'>Create Account</p>
+              <p className='text-sm font-bold text-primary hover:underline'>Create Account</p>
               <button
                 type="submit"
                 className="btn font-bold shadow-lg w-[8rem] hover:bg-primary/80 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-opacity-50"
