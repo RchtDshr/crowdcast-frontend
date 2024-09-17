@@ -3,8 +3,8 @@ import { CirclePlus, LayoutDashboard, LogOut, Wallet2 } from 'lucide-react';
 
 export default function SidePanel() {
   return (
-    <div className='text-white bg-primary h-full w-[20vw] gap-4 fixed p-8 flex flex-col justify-between items-start'>
-      <h1 className="welcome text-3xl font-bold text-wrap ">
+    <div className='text-white bg-primary h-full w-[20vw] gap-4 fixed  text-wrap  p-8 flex flex-col justify-between items-start'>
+      <h1 className="welcome text-3xl font-bold">
         Welcome, Rachita
         {/* add username here */}
       </h1>

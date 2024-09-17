@@ -2,6 +2,9 @@
 @tailwind components;
 @tailwind utilities;
 
+body{
+    background-color: #D3F3E7;
+  }
 @layer components {
     
     .btn {

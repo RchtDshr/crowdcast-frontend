@@ -9,7 +9,7 @@ export default function Signin() {
   };
 
   return (
-    <div className='bg-primary/10 w-[100vw] h-[100vh] flex justify-center items-center'>
+    <div className=' w-[100vw] h-[100vh] flex justify-center items-center'>
       <div className='bg-white w-[80vw] h-[60vh] shadow-lg rounded-lg flex justify-around px-12 py-20 gap-12'>
 
         <div className='signin-left flex flex-1 flex-col items-start justify-start gap-2'>

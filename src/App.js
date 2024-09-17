@@ -2,6 +2,7 @@ import { BrowserRouter, Route, Routes, useLocation } from 'react-router-dom';
 import './App.css';
 import SidePanel from './Components/SidePanel';
 import SignIn from './Pages/Signin';
+import Navbar from './Components/Navbar';
 
 function AppContent() {
   const location = useLocation();
@@ -9,7 +10,7 @@ function AppContent() {
 
   return (
     <div className="app-container font-primary">
-      {!isSignInPage && <SidePanel />}
+      {!isSignInPage && ( <><SidePanel /> <Navbar/> </>)}
       <main className="content">
         <Routes>
           <Route path="/signin" element={<SignIn />} />
