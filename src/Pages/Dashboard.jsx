@@ -13,7 +13,7 @@ export default function Dashboard() {
         <div className="relative left-[20vw] top-20 w-[80vw] ">
         <Routes>
           <Route path="/" element={<AdDetails />} />
-          <Route path="/createad" element={<CreateAd />} />
+          <Route path="/create" element={<CreateAd />} />
           {/* <Route path="/wallet" element={<Wallet />} /> */}
         </Routes>
         </div>
