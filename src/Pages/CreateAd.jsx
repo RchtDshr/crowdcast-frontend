@@ -1,6 +1,6 @@
-import { CheckCircle } from 'lucide-react';
+import React, { useState, useEffect, useRef } from 'react';
+import { CheckCircle, Upload, X } from 'lucide-react';
 import { Link } from 'react-router-dom';
-import React, { useState } from 'react';
 
 const ageGroups = [
     { value: "3-9", label: "3-9 years old" },
@@ -27,10 +27,17 @@ const locations = [
 ];
 
 export default function CreateAd() {
+    const [adName, setAdName] = useState('');
     const [selectedAgeGroups, setSelectedAgeGroups] = useState([]);
     const [selectedLocations, setSelectedLocations] = useState([]);
+    const [selectedGenders, setSelectedGenders] = useState([]);
     const [isAgeGroupOpen, setIsAgeGroupOpen] = useState(false);
     const [isLocationOpen, setIsLocationOpen] = useState(false);
+    const [files, setFiles] = useState([]);
+
+    const ageGroupRef = useRef(null);
+    const locationRef = useRef(null);
+    const fileInputRef = useRef(null);
 
     const toggleAgeGroupDropdown = () => setIsAgeGroupOpen(!isAgeGroupOpen);
     const toggleLocationDropdown = () => setIsLocationOpen(!isLocationOpen);
@@ -49,71 +56,228 @@ export default function CreateAd() {
         );
     };
 
+    const handleGenderChange = (gender) => {
+        setSelectedGenders((prev) =>
+            prev.includes(gender)
+                ? prev.filter((g) => g !== gender)
+                : [...prev, gender]
+        );
+    };
+
+    const handleFileChange = (e) => {
+        const selectedFiles = Array.from(e.target.files);
+        setFiles(selectedFiles);
+    };
+
+    const handleDragOver = (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+    };
+
+    const handleDrop = (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        const droppedFiles = Array.from(e.dataTransfer.files).filter(
+            file => file.type.startsWith('image/') || file.type.startsWith('video/')
+        );
+        setFiles(droppedFiles);
+    };
+
+    const handleReupload = () => {
+        if (fileInputRef.current) {
+            fileInputRef.current.value = ''; // Clear the file input
+            fileInputRef.current.click();
+        }
+    };
+
+    const handleRemoveFile = (index) => {
+        setFiles(prevFiles => prevFiles.filter((_, i) => i !== index));
+    };
+
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+
+        const formData = new FormData();
+        formData.append('adName', adName);
+        formData.append('ageGroups', JSON.stringify(selectedAgeGroups));
+        formData.append('locations', JSON.stringify(selectedLocations));
+        formData.append('genders', JSON.stringify(selectedGenders));
+
+        files.forEach((file, index) => {
+            formData.append(`file${index}`, file);
+        });
+        console.log(formData);
+        try {
+            const response = await fetch('/api/submit-ad', {
+                method: 'POST',
+                body: formData,
+            });
+
+            if (response.ok) {
+                const result = await response.json();
+                console.log('Ad submitted successfully:', result);
+                // Handle success (e.g., show a success message, redirect, etc.)
+            } else {
+                console.error('Failed to submit ad');
+                // Handle error (e.g., show an error message)
+            }
+        } catch (error) {
+            console.error('Error submitting ad:', error);
+            // Handle error (e.g., show an error message)
+        }
+    };
+
+    useEffect(() => {
+        const handleClickOutside = (event) => {
+            if (ageGroupRef.current && !ageGroupRef.current.contains(event.target)) {
+                setIsAgeGroupOpen(false);
+            }
+            if (locationRef.current && !locationRef.current.contains(event.target)) {
+                setIsLocationOpen(false);
+            }
+        };
+
+        document.addEventListener('mousedown', handleClickOutside);
+        return () => {
+            document.removeEventListener('mousedown', handleClickOutside);
+        };
+    }, []);
+
     return (
-        <div className='p-4'>
-            <form>
-                <div className=' grid grid-cols-2 gap-2'>
-
-
+        <div className='p-4 h-full z-0 '>
+            <form onSubmit={handleSubmit}>
+                <div className='grid grid-cols-2 gap-2'>
                     {/* ad name */}
                     <div className='box col-span-2'>
-                        Ad name:
+                        Advertisement name:
                         <input
                             type="text"
                             name="adName"
+                            value={adName}
+                            onChange={(e) => setAdName(e.target.value)}
                             className="w-full text-sm bg-white px-2 py-2 mt-2 border rounded-md focus:outline-none focus:ring-1 focus:ring-primary"
-                            placeholder="Type..."
+                            placeholder="Enter Advertisement Name..."
                         />
                     </div>
 
                     {/* upload ad */}
                     <div className="box">
-                        Upload Ad:
-                        <input
-                            type="file"
-                            name="uploadAd"
-                            className="w-full text-sm bg-white px-2 py-2 mt-2 border rounded-md focus:outline-none focus:ring-1 focus:ring-primary"
-                        />
+                        Upload Advertisement:
+                        <div
+                            className="w-full h-32 border-2 mt-2 border-dashed border-gray-300 rounded-lg p-4 text-center cursor-pointer hover:border-primary transition-colors duration-300 flex flex-col items-center justify-center"
+                            onDragOver={handleDragOver}
+                            onDrop={handleDrop}
+                            onClick={handleReupload}
+                        >
+                            <Upload className="w-8 h-8 text-gray-400 mb-2" />
+                            <p className="text-sm text-gray-500">
+                                {files.length > 0 ? 'Click to reupload or drag and drop new files' : 'Drag and drop files here or click to browse'}
+                            </p>
+                            <input
+                                ref={fileInputRef}
+                                type="file"
+                                multiple
+                                accept="image/*,video/*"
+                                onChange={handleFileChange}
+                                className="hidden"
+                            />
+                        </div>
+                        {files.length > 0 && (
+                            <div className="mt-2">
+                                <p className="text-sm font-semibold mb-2">Selected files:</p>
+                                <div className="grid grid-cols-3 gap-2">
+                                    {files.map((file, index) => (
+                                        <div key={index} className="relative">
+                                            {file.type.startsWith('image/') ? (
+                                                <img
+                                                    src={URL.createObjectURL(file)}
+                                                    alt={file.name}
+                                                    className="w-full h-24 object-cover rounded-md"
+                                                />
+                                            ) : (
+                                                <video
+                                                    src={URL.createObjectURL(file)}
+                                                    className="w-full h-24 object-cover rounded-md"
+                                                />
+                                            )}
+                                            <button
+                                                type="button"
+                                                onClick={() => handleRemoveFile(index)}
+                                                className="absolute top-1 right-1 bg-red-500 text-white rounded-full p-1 hover:bg-red-600 transition-colors duration-300"
+                                            >
+                                                <X size={16} />
+                                            </button>
+                                            <p className="text-xs mt-1 truncate">{file.name}</p>
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+                        )}
                     </div>
 
                     {/* select age */}
-                    <div className="box relative z-100">
-                        Select Age Group/s:
-                        <button
-                            type="button"
-                            onClick={toggleAgeGroupDropdown}
-                            className="shadow z-100 appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline mt-2"
-                        >
-                            {selectedAgeGroups.length > 0 ? selectedAgeGroups.join(', ') : 'Select Age Group/s'}
-                        </button>
+                    <div className="box relative flex flex-col justify-between items-start gap-4" ref={ageGroupRef}>
+                        <div className="age w-full">
+                            Select Target Age Group/s:
+                            <button
+                                type="button"
+                                onClick={toggleAgeGroupDropdown}
+                                className="shadow z-100 appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline mt-2"
+                            >
+                                {selectedAgeGroups.length > 0 ? selectedAgeGroups.join(', ') : 'Select Age Group/s'}
+                            </button>
 
-                        {isAgeGroupOpen && (
-                            <div className="absolute z-100 mt-2 w-full bg-white border rounded shadow-lg max-h-60 overflow-y-auto">
-                                {ageGroups.map(group => (
-                                    <label key={group.value} className="block px-4 py-2">
-                                        <input
-                                            type="checkbox"
-                                            value={group.value}
-                                            onChange={handleAgeGroupChange}
-                                            checked={selectedAgeGroups.includes(group.value)}
-                                            className="mr-2 z-100"
-                                        />
-                                        {group.label}
-                                    </label>
+                            {isAgeGroupOpen && (
+                                <div className="absolute mt-2 w-full bg-white border rounded shadow-lg max-h-60 overflow-y-auto z-10">
+                                    {ageGroups.map(group => (
+                                        <label key={group.value} className="block px-4 py-2">
+                                            <input
+                                                type="checkbox"
+                                                value={group.value}
+                                                onChange={handleAgeGroupChange}
+                                                checked={selectedAgeGroups.includes(group.value)}
+                                                className="mr-2"
+                                            />
+                                            {group.label}
+                                        </label>
+                                    ))}
+                                </div>
+                            )}
+                            <ul className='grid grid-cols-4 gap-2 mt-3'>
+                                {selectedAgeGroups.map((ageGroup, index) => (
+                                    <li key={index} className='bg-primary flex justify-center items-center gap-2 text-md text-white py-2 px-4 rounded-[10rem] shadow-md'>
+                                        {ageGroup} <CheckCircle />
+                                    </li>
                                 ))}
+                            </ul>
+
+                        </div>
+                        <div className="gender">
+                            <div>
+                                <label className="form-label day">
+                                    Choose Target Gender/s: 
+                                </label>
+                                <div className="gender-selector space-x-2 ">
+                                    {['M', 'F'].map((gender) => (
+                                        <button
+                                            key={gender}
+                                            type="button"
+                                            className={`border-2 border-dashed ${
+                                                selectedGenders.includes(gender) ? 'bg-primary border-primary text-white' : 'border-gray-300'
+                                            } rounded-lg px-4 py-2 text-md text-center cursor-pointer hover:border-primary transition-colors duration-300 mt-2`}
+                                            onClick={() => handleGenderChange(gender)}
+                                        >
+                                            {gender}
+                                        </button>
+                                    ))}
+                                </div>
                             </div>
-                        )}
-                        <ul className='grid grid-cols-4 gap-2 mt-3'>
-                            {selectedAgeGroups.map((ageGroup, index) => (
-                                <li key={index} className='bg-primary flex justify-center items-center gap-2 text-md text-white py-2 px-4 rounded-[10rem] shadow-md'>
-                                    {ageGroup} <CheckCircle />
-                                </li>
-                            ))}
-                        </ul>
+                        </div>
+
                     </div>
 
                     {/* select locations */}
-                    <div className="box relative">
+                    <div className="box relative" ref={locationRef}>
                         Select Location/s:
                         <button
                             type="button"
@@ -124,12 +288,12 @@ export default function CreateAd() {
                         </button>
 
                         {isLocationOpen && (
-                            <div className="absolute mt-2 w-full bg-white border rounded shadow-lg max-h-60 overflow-y-auto">
+                            <div className="absolute mt-2 w-full bg-white border rounded shadow-lg max-h-60 overflow-y-auto z-10">
                                 {locations.map(location => (
                                     <label key={location.value} className="block px-4 py-2">
                                         <input
                                             type="checkbox"
-                                            value={location.value}
+                                            value={location.label}
                                             onChange={handleLocationChange}
                                             checked={selectedLocations.includes(location.value)}
                                             className="mr-2"
@@ -148,24 +312,21 @@ export default function CreateAd() {
                         </ul>
                     </div>
 
-                    {/* min balance check. the user must have the defined balance in his account */}
-                    <div className="balance h-full box relative flex flex-col z-10 ">
+                    {/* min balance check */}
+                    <div className="balance h-full box z-0 relative flex flex-col">
                         Min credits required to run the ad
                         <br />
-                        <div className='flex flex-col justify-between items-start h-full'>
+                        <div className='flex flex-col justify-between items-start h-full z-0'>
                             <span className='text-primary relative font-bold text-3xl'>60,000</span>
                             <div className='btn relative'>
                                 <Link to='/wallet'>Add Balance</Link>
                             </div>
                         </div>
                     </div>
-
                 </div>
                 <button
                     type="submit"
-                    // onClick={handleSubmit}
                     className="submit-button btn mt-2"
-                // disabled={isSubmitting}
                 >
                     Publish Ad
                 </button>
