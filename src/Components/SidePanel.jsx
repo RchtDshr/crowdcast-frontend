@@ -17,7 +17,7 @@ export default function SidePanel() {
             <LayoutDashboard /> Dashboard
           </Link>
 
-          <Link to='/create' className='flex gap-3 items-start justify-center'>
+          <Link to='/create-ad' className='flex gap-3 items-start justify-center'>
             <Megaphone /> Create Ad
           </Link>
           <Link to='/wallet' className='flex gap-3 items-start justify-center'>

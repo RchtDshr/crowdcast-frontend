@@ -14,7 +14,7 @@ export default function Dashboard() {
         <div className="relative z-1 left-[20vw] top-20 w-[80vw] overflow-x-hidden">
         <Routes>
           <Route path="/" element={<AdDetails />} />
-          <Route path="/create" element={<CreateAd />} />
+          <Route path="/create-ad" element={<CreateAd />} />
           <Route path="/wallet" element={<Wallet />} />
         </Routes>
         </div>
