@@ -1,9 +1,10 @@
 import React, { useState } from 'react'
 import axios from 'axios';
-import { Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 
 export default function SignUp() {
     const [signupCredentials, setsignupCredentials] = useState({ name: "", email: "", password: "" });
+    const navigate = useNavigate();
 
     const onChange = (e) => {
         setsignupCredentials({ ...signupCredentials, [e.target.name]: e.target.value });
@@ -18,7 +19,12 @@ export default function SignUp() {
                 password: signupCredentials.password
             });
 
-            alert("Sign up successfull, verify OTP");
+            if (response.data.message === 'User registered. Please verify your email.') {
+                alert("Sign Up Successfull. Please verify your email");
+                navigate('/verify-otp'); 
+            } else {
+                alert("Can not sign up: " + response.data.message);
+            }
         } catch (error) {
             alert("Error during login:", error);
         }
@@ -76,9 +82,9 @@ export default function SignUp() {
                                 type="submit"
                                 className="btn font-bold shadow-lg w-[8rem] hover:bg-primary/80 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-opacity-50"
                             >
-                                <Link to='/verify-otp'>
+                           
                                     Sign Up
-                                </Link>
+                            
                             </button>
                         </div>
                     </form>

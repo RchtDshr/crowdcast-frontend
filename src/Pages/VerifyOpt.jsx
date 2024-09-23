@@ -1,9 +1,10 @@
 import React, { useState } from 'react'
 import axios from 'axios';
-import { Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 
 export default function VerifyOTP() {
   const [verifyotp, setverifyotp] = useState({ email: "", otp: ""});
+  const navigate = useNavigate();
 
   const onChange = (e) => {
     setverifyotp({ ...verifyotp, [e.target.name]: e.target.value });
@@ -17,11 +18,16 @@ export default function VerifyOTP() {
             otp: verifyotp.otp
         });
 
-        alert("OTP Verified")
+        if (response.data.message === 'User verified successfully') {
+            alert("OTP Verified Successfully");
+            navigate('/'); // Redirect to home page
+        } else {
+            alert("OTP Verification failed: " + response.data.message);
+        }
     } catch (error) {
-        alert("OPT not verified, an error occured: ", error);
+        alert("OTP not verified, an error occurred: " + (error.response?.data?.message || error.message));
     }
-};
+  };
 
 
   return (
@@ -63,9 +69,9 @@ export default function VerifyOTP() {
                 type="submit"
                 className="btn font-bold shadow-lg w-[8rem] hover:bg-primary/80 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-opacity-50"
               >
-                <Link to='/'>
+        
                 Sign Up
-                </Link>
+           
               </button>
             </div>
           </form>
