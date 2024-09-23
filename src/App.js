@@ -3,6 +3,7 @@ import './App.css';
 import SignIn from './Pages/Signin';
 import Dashboard from './Pages/Dashboard';
 import SignUp from './Pages/SignUp';
+import VerifyOTP from './Pages/VerifyOpt';
 
 function App() {
   return (
@@ -11,6 +12,7 @@ function App() {
         <Route path='/*' element={<Dashboard/>} />
         <Route path='/login' element={<SignIn/>} />
         <Route path='/signup' element={<SignUp/>} />
+        <Route path='/verify-otp' element={<VerifyOTP/>} />
       </Routes>
     </BrowserRouter>
   );
