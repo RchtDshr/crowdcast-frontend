@@ -174,15 +174,7 @@ export default function CreateAd() {
     return (
         <div className='p-4 h-full z-0 '>
             <form onSubmit={handleSubmit}>
-                {errors.length > 0 && (
-                    <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4" role="alert">
-                        <ul className="mt-2">
-                            {errors.map((error, index) => (
-                                <li key={index}>{error}</li>
-                            ))}
-                        </ul>
-                    </div>
-                )}
+                
                 <div className='grid grid-cols-2 gap-2'>
                     {/* ad name */}
                     <div className='box col-span-2'>
@@ -366,6 +358,13 @@ export default function CreateAd() {
                         </div>
                     </div>
                 </div>
+                {errors.length > 0 && (
+                    <div className="bg-red-100 border mt-2 border-red-400 text-red-700 px-4 py-3 rounded relative mb-2" role="alert">
+                            {errors.map((error, index) => (
+                                <p key={index}>{error}</p>
+                            ))}                       
+                    </div>
+                )}
                 <button
                     type="submit"
                     className="submit-button btn mt-2"
