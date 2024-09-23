@@ -1,15 +1,16 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { CheckCircle, Upload, X } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import axios from 'axios';
 
 const ageGroups = [
-    { value: "3-9", label: "3-9 years old" },
-    { value: "10-19", label: "10-19 years old" },
-    { value: "20-29", label: "20-29 years old" },
-    { value: "30-39", label: "30-39 years old" },
-    { value: "40-49", label: "40-49 years old" },
-    { value: "50-59", label: "50-59 years old" },
-    { value: "60-70", label: "60-70 years old" }
+    { value: "1", label: "3-9 years old" },
+    { value: "2", label: "10-19 years old" },
+    { value: "3", label: "20-29 years old" },
+    { value: "4", label: "30-39 years old" },
+    { value: "5", label: "40-49 years old" },
+    { value: "6", label: "50-59 years old" },
+    { value: "7", label: "60-70 years old" }
 ];
 
 const locations = [
@@ -34,6 +35,7 @@ export default function CreateAd() {
     const [isAgeGroupOpen, setIsAgeGroupOpen] = useState(false);
     const [isLocationOpen, setIsLocationOpen] = useState(false);
     const [files, setFiles] = useState([]);
+    const [errors, setErrors] = useState({});
 
     const ageGroupRef = useRef(null);
     const locationRef = useRef(null);
@@ -44,8 +46,12 @@ export default function CreateAd() {
 
     const handleAgeGroupChange = (e) => {
         const { value, checked } = e.target;
+        const selectedGroup = ageGroups.find(group => group.value === value);
+
         setSelectedAgeGroups((prev) =>
-            checked ? [...prev, value] : prev.filter((v) => v !== value)
+            checked
+                ? [...prev, { value: selectedGroup.value, label: selectedGroup.label }]
+                : prev.filter((v) => v.value !== value)
         );
     };
 
@@ -94,23 +100,45 @@ export default function CreateAd() {
         setFiles(prevFiles => prevFiles.filter((_, i) => i !== index));
     };
 
+    const validateForm = () => {
+        const newErrors = [];
+
+        if (!adName.trim()) newErrors.push("Advertisement name is required");
+        if (selectedAgeGroups.length === 0) newErrors.push("Please select at least one age group");
+        if (selectedGenders.length === 0) newErrors.push("Please select at least one gender");
+        if (selectedLocations.length === 0) newErrors.push("Please select at least one location");
+        if (files.length === 0) newErrors.push("Please upload at least one file");
+
+        setErrors(newErrors);
+        return newErrors.length === 0;
+    };
+
     const handleSubmit = async (e) => {
         e.preventDefault();
 
+        if (!validateForm()) {
+            // If the form is not valid, don't submit
+            return;
+        }
+
         const formData = new FormData();
         formData.append('adName', adName);
-        formData.append('ageGroups', JSON.stringify(selectedAgeGroups));
+        formData.append('ageGroups', JSON.stringify(selectedAgeGroups.map((ageGroup, index) => (ageGroup.value))));
         formData.append('locations', JSON.stringify(selectedLocations));
         formData.append('genders', JSON.stringify(selectedGenders));
 
         files.forEach((file, index) => {
             formData.append(`file${index}`, file);
         });
+
         console.log(formData);
+        for (let [key, value] of formData.entries()) {
+            console.log(key, value);
+        }
+
         try {
-            const response = await fetch('/api/submit-ad', {
-                method: 'POST',
-                body: formData,
+            const response = await axios.post('http://localhost:5000/api/create-ad', formData, {
+                headers: { 'Content-Type': 'multipart/form-data' },
             });
 
             if (response.ok) {
@@ -146,6 +174,15 @@ export default function CreateAd() {
     return (
         <div className='p-4 h-full z-0 '>
             <form onSubmit={handleSubmit}>
+                {errors.length > 0 && (
+                    <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4" role="alert">
+                        <ul className="mt-2">
+                            {errors.map((error, index) => (
+                                <li key={index}>{error}</li>
+                            ))}
+                        </ul>
+                    </div>
+                )}
                 <div className='grid grid-cols-2 gap-2'>
                     {/* ad name */}
                     <div className='box col-span-2'>
@@ -154,6 +191,7 @@ export default function CreateAd() {
                             type="text"
                             name="adName"
                             value={adName}
+                            required
                             onChange={(e) => setAdName(e.target.value)}
                             className="w-full text-sm bg-white px-2 py-2 mt-2 border rounded-md focus:outline-none focus:ring-1 focus:ring-primary"
                             placeholder="Enter Advertisement Name..."
@@ -164,7 +202,8 @@ export default function CreateAd() {
                     <div className="box">
                         Upload Advertisement:
                         <div
-                            className="w-full h-32 border-2 mt-2 border-dashed border-gray-300 rounded-lg p-4 text-center cursor-pointer hover:border-primary transition-colors duration-300 flex flex-col items-center justify-center"
+                            // className="w-full h-32 border-2 mt-2 border-dashed border-gray-300 rounded-lg p-4 text-center cursor-pointer hover:border-primary transition-colors duration-300 flex flex-col items-center justify-center"
+                            className={`w-full h-32 border-2 mt-2 border-dashed ${errors.files ? 'border-red-500' : 'border-gray-300'} rounded-lg p-4 text-center cursor-pointer hover:border-primary transition-colors duration-300 flex flex-col items-center justify-center`}
                             onDragOver={handleDragOver}
                             onDrop={handleDrop}
                             onClick={handleReupload}
@@ -180,6 +219,7 @@ export default function CreateAd() {
                                 accept="image/*,video/*"
                                 onChange={handleFileChange}
                                 className="hidden"
+                                required
                             />
                         </div>
                         {files.length > 0 && (
@@ -224,7 +264,8 @@ export default function CreateAd() {
                                 onClick={toggleAgeGroupDropdown}
                                 className="shadow z-100 appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline mt-2"
                             >
-                                {selectedAgeGroups.length > 0 ? selectedAgeGroups.join(', ') : 'Select Age Group/s'}
+                                {selectedAgeGroups.length > 0 ? selectedAgeGroups.map(group => group.label).join(', ') : 'Select Age Group/s'}
+
                             </button>
 
                             {isAgeGroupOpen && (
@@ -235,18 +276,19 @@ export default function CreateAd() {
                                                 type="checkbox"
                                                 value={group.value}
                                                 onChange={handleAgeGroupChange}
-                                                checked={selectedAgeGroups.includes(group.value)}
+                                                checked={selectedAgeGroups.some(selected => selected.value === group.value)}
                                                 className="mr-2"
+                                                required
                                             />
                                             {group.label}
                                         </label>
                                     ))}
                                 </div>
                             )}
-                            <ul className='grid grid-cols-4 gap-2 mt-3'>
+                            <ul className='grid grid-cols-3 gap-2 mt-3'>
                                 {selectedAgeGroups.map((ageGroup, index) => (
                                     <li key={index} className='bg-primary flex justify-center items-center gap-2 text-md text-white py-2 px-4 rounded-[10rem] shadow-md'>
-                                        {ageGroup} <CheckCircle />
+                                        {ageGroup.label} <CheckCircle />
                                     </li>
                                 ))}
                             </ul>
@@ -255,16 +297,15 @@ export default function CreateAd() {
                         <div className="gender">
                             <div>
                                 <label className="form-label day">
-                                    Choose Target Gender/s: 
+                                    Choose Target Gender/s:
                                 </label>
                                 <div className="gender-selector space-x-2 ">
                                     {['M', 'F'].map((gender) => (
                                         <button
                                             key={gender}
                                             type="button"
-                                            className={`border-2 border-dashed ${
-                                                selectedGenders.includes(gender) ? 'bg-primary border-primary text-white' : 'border-gray-300'
-                                            } rounded-lg px-4 py-2 text-md text-center cursor-pointer hover:border-primary transition-colors duration-300 mt-2`}
+                                            className={`border-2 border-dashed ${selectedGenders.includes(gender) ? 'bg-primary border-primary text-white' : 'border-gray-300'
+                                                } rounded-lg px-4 py-2 text-md text-center cursor-pointer hover:border-primary transition-colors duration-300 mt-2`}
                                             onClick={() => handleGenderChange(gender)}
                                         >
                                             {gender}
@@ -293,10 +334,11 @@ export default function CreateAd() {
                                     <label key={location.value} className="block px-4 py-2">
                                         <input
                                             type="checkbox"
-                                            value={location.label}
+                                            value={location.value}
                                             onChange={handleLocationChange}
                                             checked={selectedLocations.includes(location.value)}
                                             className="mr-2"
+                                            required
                                         />
                                         {location.label}
                                     </label>
