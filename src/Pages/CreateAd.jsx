@@ -255,6 +255,43 @@ export default function CreateAd() {
                         )}
                     </div>
 
+{/* select locations */}
+<div className="box relative" ref={locationRef}>
+                        Select Location/s:
+                        <button
+                            type="button"
+                            onClick={toggleLocationDropdown}
+                            className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline mt-2"
+                        >
+                            {selectedLocations.length > 0 ? selectedLocations.join(', ') : 'Select Location/s'}
+                        </button>
+
+                        {isLocationOpen && (
+                            <div className="absolute mt-2 w-full bg-white border rounded shadow-lg max-h-60 overflow-y-auto z-10">
+                                {locations.map(location => (
+                                    <label key={location.value} className="block px-4 py-2">
+                                        <input
+                                            type="checkbox"
+                                            value={location.value}
+                                            onChange={handleLocationChange}
+                                            checked={selectedLocations.includes(location.value)}
+                                            className="mr-2"
+                                            required
+                                        />
+                                        {location.label}
+                                    </label>
+                                ))}
+                            </div>
+                        )}
+                        <ul className='flex flex-col justify-start items-start gap-2 mt-3'>
+                            {selectedLocations.map((location, index) => (
+                                <li key={index} className='bg-primary flex justify-center items-center gap-2 text-md text-white py-2 px-4 rounded-[10rem] shadow-md'>
+                                    {location} <CheckCircle />
+                                </li>
+                            ))}
+                        </ul>
+                    </div>
+                    
                     {/* select age */}
                     <div className="box relative flex flex-col justify-between items-start gap-4" ref={ageGroupRef}>
                         <div className="age w-full">
@@ -294,7 +331,10 @@ export default function CreateAd() {
                             </ul>
 
                         </div>
-                        <div className="gender">
+
+                    </div>
+
+                    <div className="gender box">
                             <div>
                                 <label className="form-label day">
                                     Choose Target Gender/s:
@@ -314,57 +354,6 @@ export default function CreateAd() {
                                 </div>
                             </div>
                         </div>
-
-                    </div>
-
-                    {/* select locations */}
-                    <div className="box relative" ref={locationRef}>
-                        Select Location/s:
-                        <button
-                            type="button"
-                            onClick={toggleLocationDropdown}
-                            className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline mt-2"
-                        >
-                            {selectedLocations.length > 0 ? selectedLocations.join(', ') : 'Select Location/s'}
-                        </button>
-
-                        {isLocationOpen && (
-                            <div className="absolute mt-2 w-full bg-white border rounded shadow-lg max-h-60 overflow-y-auto z-10">
-                                {locations.map(location => (
-                                    <label key={location.value} className="block px-4 py-2">
-                                        <input
-                                            type="checkbox"
-                                            value={location.value}
-                                            onChange={handleLocationChange}
-                                            checked={selectedLocations.includes(location.value)}
-                                            className="mr-2"
-                                            required
-                                        />
-                                        {location.label}
-                                    </label>
-                                ))}
-                            </div>
-                        )}
-                        <ul className='flex flex-col justify-start items-start gap-2 mt-3'>
-                            {selectedLocations.map((location, index) => (
-                                <li key={index} className='bg-primary flex justify-center items-center gap-2 text-md text-white py-2 px-4 rounded-[10rem] shadow-md'>
-                                    {location} <CheckCircle />
-                                </li>
-                            ))}
-                        </ul>
-                    </div>
-
-                    {/* min balance check */}
-                    <div className="balance h-full box z-0 relative flex flex-col">
-                        Min credits required to run the ad
-                        <br />
-                        <div className='flex flex-col justify-between items-start h-full z-0'>
-                            <span className='text-primary relative font-bold text-3xl'>60,000</span>
-                            <div className='btn relative'>
-                                <Link to='/wallet'>Add Balance</Link>
-                            </div>
-                        </div>
-                    </div>
                 </div>
                 {errors.length > 0 && (
                     <div className="bg-red-100 border mt-2 border-red-400 text-red-700 px-4 py-3 rounded relative mb-2" role="alert">

@@ -24,8 +24,8 @@ const ageGroupMultipliers = {
 };
 
 const genderMultipliers = {
-    "M": 1.8,
-    "F": 1.9
+    "M": 1.3,
+    "F": 1.4
 };
 
 // Function to get video duration
@@ -77,7 +77,7 @@ async function calculateAdPrice(formData) {
     const genderMultiplier = selectedGenders.length > 0
         ? selectedGenders.reduce((total, gender) => {
             return total + (genderMultipliers[gender] || 1);
-        }, 0) / (selectedGenders.length == 2 ? 1.6 : selectedGenders.length)
+        }, 0) / (selectedGenders.length == 2 ? 1.8 : selectedGenders.length)
         : 1;
 
     // Calculate price based on ad type (image or video)
@@ -105,7 +105,7 @@ async function calculateAdPrice(formData) {
     }
 
     // Calculate final price
-    const finalPrice = (locationBasePrice + adTypePrice) * ageMultiplier * genderMultiplier;
+    const finalPrice = Math.ceil((locationBasePrice + adTypePrice) * ageMultiplier * genderMultiplier);
 
     return {
         basePrice: locationBasePrice + adTypePrice,
