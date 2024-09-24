@@ -14,7 +14,7 @@ function App() {
       <Routes>
         <Route path='/' element={<DashboardLayout />}>
           <Route index element={<AdDetails />} />
-          <Route path='ad-details' element={<AdDetails />} />
+          <Route path='dashboard' element={<AdDetails />} />
           <Route path='create-ad' element={<CreateAd />} />
           <Route path='wallet' element={<Wallet />} />
         </Route>

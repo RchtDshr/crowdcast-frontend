@@ -13,7 +13,7 @@ export default function SidePanel() {
 
 
         <div className="route text-md flex flex-col gap-6 items-start justify-center">
-          <Link to='/' className='flex gap-3 items-start justify-center'>
+          <Link to='/dashboard' className='flex gap-3 items-start justify-center'>
             <LayoutDashboard /> Dashboard
           </Link>
 

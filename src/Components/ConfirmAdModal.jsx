@@ -26,7 +26,7 @@ const ConfirmAdModal = ({ onClose, onSubmit, priceData }) => {
                   }
                   <p>Age Multiplier: {priceData.ageMultiplier}</p>
                   <p>Gender Multiplier: {priceData.genderMultiplier}</p>
-                    <p className="font-bold mt-2">Final Price: <span className="text-primary text-lg">Rs. {priceData.finalPrice}</span></p>
+                    <p className="font-bold mt-2 text-lg">Final Price: <span className="text-primary">Rs. {priceData.finalPrice}</span></p>
                 </div>
                 <div className="flex justify-end">
                     <button
