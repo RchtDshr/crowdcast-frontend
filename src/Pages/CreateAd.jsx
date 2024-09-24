@@ -1,8 +1,9 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { CheckCircle, Upload, X } from 'lucide-react';
 import calculateAdPrice from '../utils/priceCalc';
-import { Link } from 'react-router-dom';
+import { NavLink } from 'react-router-dom';
 import axios from 'axios';
+import ConfirmAdModal from '../Components/ConfirmAdModal';
 
 const ageGroups = [
     { value: "1", label: "3-9 years old" },
@@ -38,6 +39,10 @@ export default function CreateAd() {
     const [files, setFiles] = useState([]);
     const [errors, setErrors] = useState({});
 
+    const [formData, setFormData] = useState(null);
+    const [priceData, setPriceData] = useState(null);
+    //Confirmation Modal
+    const [isModalOpen, setIsModalOpen] = useState(false);
     const ageGroupRef = useRef(null);
     const locationRef = useRef(null);
     const fileInputRef = useRef(null);
@@ -118,40 +123,43 @@ export default function CreateAd() {
         e.preventDefault();
 
         if (!validateForm()) {
-            // If the form is not valid, don't submit
             return;
         }
 
-        const formData = new FormData();
-        formData.append('adName', adName);
-        formData.append('ageGroups', JSON.stringify(selectedAgeGroups.map((ageGroup) => (ageGroup.value))));
-        formData.append('locations', JSON.stringify(selectedLocations));
-        formData.append('genders', JSON.stringify(selectedGenders));
-        // formData.append('adFile', files);
+        const newFormData = new FormData(e.target);
+
+        newFormData.append('adName', adName);
+        newFormData.append('ageGroups', JSON.stringify(selectedAgeGroups.map((ageGroup) => (ageGroup.value))));
+        newFormData.append('locations', JSON.stringify(selectedLocations));
+        newFormData.append('genders', JSON.stringify(selectedGenders));
         files.forEach((file, index) => {
-            formData.append(`file${index}`, file);
+            newFormData.append(`file${index}`, file);
         });
 
-        console.log(formData);
-        for (let [key, value] of formData.entries()) {
-            console.log(key, value);
+        setFormData(newFormData);
+
+        try {
+            const price = await calculateAdPrice(newFormData); // Ensure price calculation completes
+            setPriceData(price);
+            
+            // Only open the modal after successful validation and price calculation
+            if (errors.length === 0) {
+                setIsModalOpen(true); // Open modal once everything is ready
+            }
+        } catch (error) {
+            console.error('Error calculating price:', error);
         }
-        const price = await calculateAdPrice(formData);
-        console.log("Final price ", price.finalPrice);
-        console.log("Base price ", price.basePrice);
-        console.log("locationBasePrice ", price.locationBasePrice);
-        console.log("ageMultiplier ", price.ageMultiplier);
-        console.log("genderMultiplier", price.genderMultiplier);
-        console.log("adType", price.adType);
-        console.log("maxDuration", price.maxDuration);
+    };
+
+    const handleConfirmSubmit = async () => {
         try {
             const response = await axios.post('http://localhost:5000/api/create-ad', formData, {
                 headers: { 'Content-Type': 'multipart/form-data' },
             });
 
-            if (response.ok) {
-                const result = await response.json();
-                console.log('Ad submitted successfully:', result);
+            if (response.status === 200) {
+                console.log('Ad submitted successfully:', response.data);
+                setIsModalOpen(false)
                 // Handle success (e.g., show a success message, redirect, etc.)
             } else {
                 console.error('Failed to submit ad');
@@ -161,7 +169,7 @@ export default function CreateAd() {
             console.error('Error submitting ad:', error);
             // Handle error (e.g., show an error message)
         }
-    };
+    }
 
     useEffect(() => {
         const handleClickOutside = (event) => {
@@ -182,7 +190,7 @@ export default function CreateAd() {
     return (
         <div className='p-4 z-0 w-[79vw]'>
             <form onSubmit={handleSubmit}>
-                
+
                 <div className='grid grid-cols-2 gap-2'>
                     {/* ad name */}
                     <div className='box col-span-2'>
@@ -219,7 +227,6 @@ export default function CreateAd() {
                                 accept="image/*,video/*"
                                 onChange={handleFileChange}
                                 className="hidden"
-                                required
                             />
                         </div>
                         {files.length > 0 && (
@@ -255,8 +262,8 @@ export default function CreateAd() {
                         )}
                     </div>
 
-{/* select locations */}
-<div className="box relative" ref={locationRef}>
+                    {/* select locations */}
+                    <div className="box relative" ref={locationRef}>
                         Select Location/s:
                         <button
                             type="button"
@@ -335,40 +342,44 @@ export default function CreateAd() {
                     </div>
 
                     <div className="gender box">
-                            <div>
-                                <label className="form-label day">
-                                    Choose Target Gender/s:
-                                </label>
-                                <div className="gender-selector space-x-2 ">
-                                    {['M', 'F'].map((gender) => (
-                                        <button
-                                            key={gender}
-                                            type="button"
-                                            className={`border-2 border-dashed ${selectedGenders.includes(gender) ? 'bg-primary border-primary text-white' : 'border-gray-300'
-                                                } rounded-lg px-4 py-2 text-md text-center cursor-pointer hover:border-primary transition-colors duration-300 mt-2`}
-                                            onClick={() => handleGenderChange(gender)}
-                                        >
-                                            {gender}
-                                        </button>
-                                    ))}
-                                </div>
+                        <div>
+                            <label className="form-label day">
+                                Choose Target Gender/s:
+                            </label>
+                            <div className="gender-selector space-x-2 ">
+                                {['M', 'F'].map((gender) => (
+                                    <button
+                                        key={gender}
+                                        type="button"
+                                        className={`border-2 border-dashed ${selectedGenders.includes(gender) ? 'bg-primary border-primary text-white' : 'border-gray-300'
+                                            } rounded-lg px-4 py-2 text-md text-center cursor-pointer hover:border-primary transition-colors duration-300 mt-2`}
+                                        onClick={() => handleGenderChange(gender)}
+                                    >
+                                        {gender}
+                                    </button>
+                                ))}
                             </div>
                         </div>
+                    </div>
                 </div>
                 {errors.length > 0 && (
                     <div className="bg-red-100 border mt-2 border-red-400 text-red-700 px-4 py-3 rounded relative mb-2" role="alert">
-                            {errors.map((error, index) => (
-                                <p key={index}>{error}</p>
-                            ))}                       
+                        {errors.map((error, index) => (
+                            <p key={index}>{error}</p>
+                        ))}
                     </div>
                 )}
-                <button
-                    type="submit"
-                    className="submit-button btn mt-2"
-                >
-                    Publish Ad
+                <button type="submit" className="submit-button btn mt-2">
+                    Calculate Price and Preview
                 </button>
             </form>
+            {isModalOpen && (
+                    <ConfirmAdModal
+                    onClose={() => setIsModalOpen(false)}
+                    onSubmit={handleConfirmSubmit}
+                    priceData={priceData}
+                    />
+                )}
         </div>
     );
 }
