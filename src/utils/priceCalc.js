@@ -1,31 +1,29 @@
-// priceCalc.js
-
 // Constants for pricing (same as before)
-const BASE_IMAGE_PRICE = 1000;
-const VIDEO_PRICE_PER_SECOND = 50;
+const BASE_IMAGE_PRICE = 200; //image stays on screen for 5 seconds
+const VIDEO_PRICE_PER_SECOND = 40;
 const MIN_VIDEO_DURATION = 50;
 
 const locationPrices = {
-    "Railway Stations": 60,
+    "Railway Stations": 50,
     "Malls": 100,
-    "Airports": 200,
-    "Public Transit": 60,
+    "Airports": 150,
+    "Public Transit": 40,
     "Gyms and Fitness Centers": 40,
-    "Universities and Colleges": 60,
-    "Restaurants and Cafes": 50,
-    "Healthcare Facilities": 50,
+    "Universities and Colleges": 50,
+    "Restaurants and Cafes": 40,
+    "Healthcare Facilities": 40,
     "Events and Expos": 150,
-    "Community Centers": 50,
-    "Public Libraries": 40
+    "Community Centers": 30,
+    "Public Libraries": 30
 };
 
 const ageGroupMultipliers = {
-    "1": 0.8, "2": 0.9, "3": 1.2, "4": 1.3, "5": 1.1, "6": 1.0, "7": 0.9
+    "1": 1.0, "2": 1.5, "3": 1.6, "4": 1.3, "5": 1.4, "6": 1.1, "7": 1.0
 };
 
 const genderMultipliers = {
-    "M": 1.3,
-    "F": 1.4
+    "M": 1.1,
+    "F": 1.2
 };
 
 // Function to get video duration
@@ -70,14 +68,14 @@ async function calculateAdPrice(formData) {
     const ageMultiplier = selectedAgeGroups.length > 0
         ? selectedAgeGroups.reduce((total, ageGroup) => {
             return total + (ageGroupMultipliers[ageGroup] || 1);
-        }, 0)
+        }, 0) / selectedAgeGroups.length
         : 1;
 
     // Calculate gender multiplier
     const genderMultiplier = selectedGenders.length > 0
         ? selectedGenders.reduce((total, gender) => {
             return total + (genderMultipliers[gender] || 1);
-        }, 0) / (selectedGenders.length === 2 ? 1.8 : selectedGenders.length)
+        }, 0) / (selectedGenders.length === 2 ? 1.8 : 1)
         : 1;
 
     // Calculate price based on ad type (image or video)
@@ -101,9 +99,10 @@ async function calculateAdPrice(formData) {
 
     // Apply video pricing if applicable
     if (maxDuration > 0) {
-        adTypePrice += Math.max(maxDuration, MIN_VIDEO_DURATION) * VIDEO_PRICE_PER_SECOND;
+        adTypePrice += maxDuration * VIDEO_PRICE_PER_SECOND;
     }
 
+    adTypePrice = Math.round(adTypePrice*100)/100;
     // Calculate final price
     const finalPrice = Math.ceil((locationBasePrice + adTypePrice) * ageMultiplier * genderMultiplier);
 
@@ -111,10 +110,12 @@ async function calculateAdPrice(formData) {
         basePrice: locationBasePrice + adTypePrice,
         locationBasePrice,
         finalPrice: finalPrice,
+        adTypePrice,
         ageMultiplier,
         genderMultiplier,
         maxDuration,
-        adType: files.length > 0 ? (files[0].type.startsWith('image') ? 'image' : 'video') : 'unknown'
+        adType: files.length > 0 ? (files[0].type.startsWith('image') ? 'image' : 'video') : 'unknown',
+        fileBasePrice: files.length > 0 ? (files[0].type.startsWith('image') ? BASE_IMAGE_PRICE : VIDEO_PRICE_PER_SECOND) : 'unknown'
     };
 }
 

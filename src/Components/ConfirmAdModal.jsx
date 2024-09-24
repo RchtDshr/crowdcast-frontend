@@ -6,20 +6,27 @@ const ConfirmAdModal = ({ onClose, onSubmit, priceData }) => {
         <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center">
             <div className="bg-white p-6 rounded-lg shadow-lg w-96">
                 <div className="flex justify-between items-center mb-4">
-                    <h2 className="text-xl font-bold">Confirm Advertisement</h2>
+                    <h2 className="text-3xl font-primary text-primary font-bold"> Publish Ad? </h2>
                     <button onClick={onClose} className="text-gray-500 hover:text-gray-700">
                         <X size={24} />
                     </button>
                 </div>
                 <div className="mb-4">
-                    <h3 className="font-semibold mb-2">Price Details:</h3>
-                    <p>Base Price: ₹{priceData.basePrice}</p>
-                    <p>Location Base Price: ₹{priceData.locationBasePrice}</p>
-                    <p>Age Multiplier: {priceData.ageMultiplier}</p>
-                    <p>Gender Multiplier: {priceData.genderMultiplier}</p>
-                    <p>Ad Type: {priceData.adType}</p>
-                    <p>Max Duration: {priceData.maxDuration} seconds</p>
-                    <p className="font-bold mt-2">Final Price: ₹{priceData.finalPrice}</p>
+                    <h3 className="font-semibold mb-2">Credit deduction details:</h3>
+                    {/* <p>Base Price: ₹{priceData.basePrice}</p> */}
+                    <p>Price based on locations selected: Rs. {priceData.locationBasePrice}</p>
+                    <p>Base price for {priceData.adType} is Rs. {priceData.fileBasePrice} {priceData.adType === 'video' ? "/sec": "for 5 seconds"} </p>
+                    {/* <p>Ad Type Price: ₹{priceData.adTypePrice}</p> */}
+                    {/* <p>Ad Type: {priceData.adType}</p> */}
+                    {/* <p>fileBasePrice: {priceData.fileBasePrice}</p> */}
+                    {priceData.adType === 'video' ? 
+                    <p>Price for {priceData.maxDuration} seconds long video: {priceData.adTypePrice}  </p>
+                    :
+                    ""
+                  }
+                  <p>Age Multiplier: {priceData.ageMultiplier}</p>
+                  <p>Gender Multiplier: {priceData.genderMultiplier}</p>
+                    <p className="font-bold mt-2">Final Price: <span className="text-primary text-lg">Rs. {priceData.finalPrice}</span></p>
                 </div>
                 <div className="flex justify-end">
                     <button
