@@ -13,20 +13,11 @@ const ConfirmAdModal = ({ onClose, onSubmit, priceData }) => {
                 </div>
                 <div className="mb-4">
                     <h3 className="font-semibold mb-2">Credit deduction details:</h3>
-                    {/* <p>Base Price: ₹{priceData.basePrice}</p> */}
-                    <p>Price based on locations selected: Rs. {priceData.locationBasePrice}</p>
-                    <p>Base price for {priceData.adType} is Rs. {priceData.fileBasePrice} {priceData.adType === 'video' ? "/sec": "for 5 seconds"} </p>
-                    {/* <p>Ad Type Price: ₹{priceData.adTypePrice}</p> */}
-                    {/* <p>Ad Type: {priceData.adType}</p> */}
-                    {/* <p>fileBasePrice: {priceData.fileBasePrice}</p> */}
-                    {priceData.adType === 'video' ? 
-                    <p>Price for {priceData.maxDuration} seconds long video: {priceData.adTypePrice}  </p>
-                    :
-                    ""
-                  }
-                  <p>Age Multiplier: {priceData.ageMultiplier}</p>
-                  <p>Gender Multiplier: {priceData.genderMultiplier}</p>
-                    <p className="font-bold mt-2 text-lg">Final Price: <span className="text-primary">Rs. {priceData.finalPrice}</span></p>
+                    {priceData.map((item, index) => (
+                        <p key={index}>
+                            {item.location} {item.gender} {item.ageGroupName} - Rs. {item.price}
+                        </p>
+                    ))}
                 </div>
                 <div className="flex justify-end">
                     <button

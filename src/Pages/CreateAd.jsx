@@ -39,7 +39,7 @@ export default function CreateAd() {
     const [errors, setErrors] = useState({});
 
     const [formData, setFormData] = useState(null);
-    const [priceData, setPriceData] = useState(null);
+    const [priceData, setPriceData] = useState([]);
     const [isModalOpen, setIsModalOpen] = useState(false);
 
     const ageGroupRef = useRef(null);
@@ -128,9 +128,23 @@ export default function CreateAd() {
         const newFormData = new FormData(e.target);
 
         newFormData.append('adName', adName);
-        newFormData.append('ageGroups', JSON.stringify(selectedAgeGroups.map((ageGroup) => (ageGroup.value))));
-        newFormData.append('locations', JSON.stringify(selectedLocations));
-        newFormData.append('genders', JSON.stringify(selectedGenders));
+        // Create an array of objects with combinations of location, age group, and gender
+        const adDetailsArray = [];
+        selectedLocations.forEach((location) => {
+            selectedAgeGroups.forEach((ageGroup) => {
+                selectedGenders.forEach((gender) => {
+                    adDetailsArray.push({
+                        location: location,
+                        ageGroup: ageGroup.value,
+                        ageGroupName:ageGroup.label,
+                        gender: gender,
+                    });
+                });
+            });
+        });
+
+        newFormData.append('adDetailsArray', JSON.stringify(adDetailsArray));
+
         files.forEach((file, index) => {
             newFormData.append(`file${index}`, file);
         });
@@ -139,6 +153,7 @@ export default function CreateAd() {
 
         try {
             const price = await calculateAdPrice(newFormData);
+            
             setPriceData(price);
             setIsModalOpen(true);
         } catch (error) {
@@ -366,7 +381,7 @@ export default function CreateAd() {
                         ))}
                     </div>
                 )}
-                 <button type="submit" className="submit-button btn mt-2">
+                <button type="submit" className="submit-button btn mt-2">
                     Calculate Price and Preview
                 </button>
             </form>

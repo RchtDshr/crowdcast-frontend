@@ -47,9 +47,7 @@ function getVideoDuration(file) {
 
 async function calculateAdPrice(formData) {
     // Extract and parse data from FormData
-    const selectedAgeGroups = JSON.parse(formData.get('ageGroups') || '[]');
-    const selectedLocations = JSON.parse(formData.get('locations') || '[]');
-    const selectedGenders = JSON.parse(formData.get('genders') || '[]');
+    const priceDataArray = JSON.parse(formData.get('adDetailsArray') || '[]');
 
     // Handle files
     const files = [];
@@ -59,64 +57,54 @@ async function calculateAdPrice(formData) {
         }
     }
 
-    // Calculate base price from selected locations
-    const locationBasePrice = selectedLocations.reduce((total, location) => {
-        return total + (locationPrices[location] || 0);
-    }, 0);
+    // Calculate the prices for each combination in the priceDataArray
+    const priceData = [];
+    for (const { location, ageGroup, gender,ageGroupName } of priceDataArray) {
+        // Calculate base price from selected location
+        const locationBasePrice = locationPrices[location] || 0;
 
-    // Calculate age group multiplier
-    const ageMultiplier = selectedAgeGroups.length > 0
-        ? selectedAgeGroups.reduce((total, ageGroup) => {
-            return total + (ageGroupMultipliers[ageGroup] || 1);
-        }, 0) / selectedAgeGroups.length
-        : 1;
+        // Calculate age group multiplier
+        const ageMultiplier = ageGroupMultipliers[ageGroup] || 1;
 
-    // Calculate gender multiplier
-    const genderMultiplier = selectedGenders.length > 0
-        ? selectedGenders.reduce((total, gender) => {
-            return total + (genderMultipliers[gender] || 1);
-        }, 0) / (selectedGenders.length === 2 ? 1.8 : 1)
-        : 1;
+        // Calculate price based on ad type (image or video)
+        let adTypePrice = 0;
+        let maxDuration = 0;
 
-    // Calculate price based on ad type (image or video)
-    let adTypePrice = 0;
-    let maxDuration = 0;
-
-    for (const file of files) {
-        if (file.type.startsWith('image')) {
-            adTypePrice += BASE_IMAGE_PRICE;
-        } else if (file.type.startsWith('video')) {
-            try {
-                const duration = await getVideoDuration(file);
-                maxDuration = Math.max(maxDuration, duration);
-            } catch (error) {
-                console.error("Error getting video duration:", error);
-                // Use a default duration if there's an error
-                maxDuration = Math.max(maxDuration, MIN_VIDEO_DURATION);
+        for (const file of files) {
+            if (file.type.startsWith('image')) {
+                adTypePrice += BASE_IMAGE_PRICE;
+            } else if (file.type.startsWith('video')) {
+                try {
+                    const duration = await getVideoDuration(file);
+                    maxDuration = Math.max(maxDuration, duration);
+                } catch (error) {
+                    console.error("Error getting video duration:", error);
+                    // Use a default duration if there's an error
+                    maxDuration = Math.max(maxDuration, MIN_VIDEO_DURATION);
+                }
             }
         }
+
+        // Apply video pricing if applicable
+        if (maxDuration > 0) {
+            adTypePrice += maxDuration * VIDEO_PRICE_PER_SECOND;
+        }
+
+        adTypePrice = Math.round(adTypePrice * 100) / 100;
+
+        // Calculate final price
+        const finalPrice = Math.ceil((locationBasePrice + adTypePrice) * ageMultiplier);
+
+        priceData.push({
+            location,
+            ageGroup,
+            ageGroupName,
+            gender,
+            price: finalPrice,
+        });
     }
 
-    // Apply video pricing if applicable
-    if (maxDuration > 0) {
-        adTypePrice += maxDuration * VIDEO_PRICE_PER_SECOND;
-    }
-
-    adTypePrice = Math.round(adTypePrice*100)/100;
-    // Calculate final price
-    const finalPrice = Math.ceil((locationBasePrice + adTypePrice) * ageMultiplier * genderMultiplier);
-
-    return {
-        basePrice: locationBasePrice + adTypePrice,
-        locationBasePrice,
-        finalPrice: finalPrice,
-        adTypePrice,
-        ageMultiplier,
-        genderMultiplier,
-        maxDuration,
-        adType: files.length > 0 ? (files[0].type.startsWith('image') ? 'image' : 'video') : 'unknown',
-        fileBasePrice: files.length > 0 ? (files[0].type.startsWith('image') ? BASE_IMAGE_PRICE : VIDEO_PRICE_PER_SECOND) : 'unknown'
-    };
+    return priceData;
 }
 
 // Export the function to be used in other files
