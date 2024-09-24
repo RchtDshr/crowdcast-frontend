@@ -180,7 +180,7 @@ export default function CreateAd() {
     }, []);
 
     return (
-        <div className='p-4 h-[100vh] z-0 overflow-x-hidden'>
+        <div className='p-4 z-0 w-[79vw]'>
             <form onSubmit={handleSubmit}>
                 
                 <div className='grid grid-cols-2 gap-2'>
@@ -210,7 +210,7 @@ export default function CreateAd() {
                         >
                             <Upload className="w-8 h-8 text-gray-400 mb-2" />
                             <p className="text-sm text-gray-500">
-                                {files.length > 0 ? 'Click to reupload or drag and drop new files' : 'Drag and drop files here or click to browse'}
+                                {files.length > 0 ? 'Click to reupload or drag and drop a new file' : 'Drag and drop file here or click to browse'}
                             </p>
                             <input
                                 ref={fileInputRef}
@@ -291,7 +291,7 @@ export default function CreateAd() {
                             ))}
                         </ul>
                     </div>
-                    
+
                     {/* select age */}
                     <div className="box relative flex flex-col justify-between items-start gap-4" ref={ageGroupRef}>
                         <div className="age w-full">

@@ -11,7 +11,7 @@ export default function Dashboard() {
     <div className='font-primary'>
         <SidePanel/>
         <Navbar/>
-        <div className="relative z-1 left-[20vw] top-20 w-[80vw] overflow-x-hidden">
+        <div className="relative h-full z-0 left-[20vw] top-20 w-[80vw] overflow-x-hidden">
         <Routes>
           <Route path="/" element={<AdDetails />} />
           <Route path="/create-ad" element={<CreateAd />} />

@@ -2,7 +2,7 @@ import React from 'react'
 
 export default function AdDetails() {
     return (
-        <div className='p-4 grid grid-cols-2 gap-2'>
+        <div className='p-4 h-full grid grid-cols-2 gap-2'>
 
             <div className="box col-span-2">Currently showing ad:
                 <div className="flex justify-between items-center">
