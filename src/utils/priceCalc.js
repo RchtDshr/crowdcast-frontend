@@ -77,7 +77,7 @@ async function calculateAdPrice(formData) {
     const genderMultiplier = selectedGenders.length > 0
         ? selectedGenders.reduce((total, gender) => {
             return total + (genderMultipliers[gender] || 1);
-        }, 0) / (selectedGenders.length == 2 ? 1.8 : selectedGenders.length)
+        }, 0) / (selectedGenders.length === 2 ? 1.8 : selectedGenders.length)
         : 1;
 
     // Calculate price based on ad type (image or video)

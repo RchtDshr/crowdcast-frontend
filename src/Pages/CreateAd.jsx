@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { CheckCircle, Upload, X } from 'lucide-react';
 import calculateAdPrice from '../utils/priceCalc';
-import { NavLink } from 'react-router-dom';
 import axios from 'axios';
 import ConfirmAdModal from '../Components/ConfirmAdModal';
 
@@ -41,8 +40,8 @@ export default function CreateAd() {
 
     const [formData, setFormData] = useState(null);
     const [priceData, setPriceData] = useState(null);
-    //Confirmation Modal
     const [isModalOpen, setIsModalOpen] = useState(false);
+
     const ageGroupRef = useRef(null);
     const locationRef = useRef(null);
     const fileInputRef = useRef(null);
@@ -119,7 +118,7 @@ export default function CreateAd() {
         return newErrors.length === 0;
     };
 
-    const handleSubmit = async (e) => {
+    const handleCalculatePrice = async (e) => {
         e.preventDefault();
 
         if (!validateForm()) {
@@ -139,15 +138,12 @@ export default function CreateAd() {
         setFormData(newFormData);
 
         try {
-            const price = await calculateAdPrice(newFormData); // Ensure price calculation completes
+            const price = await calculateAdPrice(newFormData);
             setPriceData(price);
-            
-            // Only open the modal after successful validation and price calculation
-            if (errors.length === 0) {
-                setIsModalOpen(true); // Open modal once everything is ready
-            }
+            setIsModalOpen(true);
         } catch (error) {
             console.error('Error calculating price:', error);
+            // Handle error (e.g., show an error message)
         }
     };
 
@@ -159,8 +155,8 @@ export default function CreateAd() {
 
             if (response.status === 200) {
                 console.log('Ad submitted successfully:', response.data);
-                setIsModalOpen(false)
                 // Handle success (e.g., show a success message, redirect, etc.)
+                setIsModalOpen(false);
             } else {
                 console.error('Failed to submit ad');
                 // Handle error (e.g., show an error message)
@@ -169,7 +165,8 @@ export default function CreateAd() {
             console.error('Error submitting ad:', error);
             // Handle error (e.g., show an error message)
         }
-    }
+    };
+
 
     useEffect(() => {
         const handleClickOutside = (event) => {
@@ -189,7 +186,7 @@ export default function CreateAd() {
 
     return (
         <div className='p-4 z-0 w-[79vw]'>
-            <form onSubmit={handleSubmit}>
+            <form onSubmit={handleCalculatePrice}>
 
                 <div className='grid grid-cols-2 gap-2'>
                     {/* ad name */}
@@ -369,17 +366,17 @@ export default function CreateAd() {
                         ))}
                     </div>
                 )}
-                <button type="submit" className="submit-button btn mt-2">
+                 <button type="submit" className="submit-button btn mt-2">
                     Calculate Price and Preview
                 </button>
             </form>
             {isModalOpen && (
-                    <ConfirmAdModal
+                <ConfirmAdModal
                     onClose={() => setIsModalOpen(false)}
                     onSubmit={handleConfirmSubmit}
                     priceData={priceData}
-                    />
-                )}
+                />
+            )}
         </div>
     );
 }
