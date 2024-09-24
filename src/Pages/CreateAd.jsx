@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { CheckCircle, Upload, X } from 'lucide-react';
+import calculateAdPrice from '../utils/priceCalc';
 import { Link } from 'react-router-dom';
 import axios from 'axios';
 
@@ -123,10 +124,10 @@ export default function CreateAd() {
 
         const formData = new FormData();
         formData.append('adName', adName);
-        formData.append('ageGroups', JSON.stringify(selectedAgeGroups.map((ageGroup, index) => (ageGroup.value))));
+        formData.append('ageGroups', JSON.stringify(selectedAgeGroups.map((ageGroup) => (ageGroup.value))));
         formData.append('locations', JSON.stringify(selectedLocations));
         formData.append('genders', JSON.stringify(selectedGenders));
-
+        // formData.append('adFile', files);
         files.forEach((file, index) => {
             formData.append(`file${index}`, file);
         });
@@ -135,7 +136,14 @@ export default function CreateAd() {
         for (let [key, value] of formData.entries()) {
             console.log(key, value);
         }
-
+        const price = await calculateAdPrice(formData);
+        console.log("Final price ", price.finalPrice);
+        console.log("Base price ", price.basePrice);
+        console.log("locationBasePrice ", price.locationBasePrice);
+        console.log("ageMultiplier ", price.ageMultiplier);
+        console.log("genderMultiplier", price.genderMultiplier);
+        console.log("adType", price.adType);
+        console.log("maxDuration", price.maxDuration);
         try {
             const response = await axios.post('http://localhost:5000/api/create-ad', formData, {
                 headers: { 'Content-Type': 'multipart/form-data' },
@@ -172,7 +180,7 @@ export default function CreateAd() {
     }, []);
 
     return (
-        <div className='p-4 h-full z-0 '>
+        <div className='p-4 h-[100vh] z-0 overflow-x-hidden'>
             <form onSubmit={handleSubmit}>
                 
                 <div className='grid grid-cols-2 gap-2'>
@@ -207,7 +215,7 @@ export default function CreateAd() {
                             <input
                                 ref={fileInputRef}
                                 type="file"
-                                multiple
+                                name='adFile'
                                 accept="image/*,video/*"
                                 onChange={handleFileChange}
                                 className="hidden"
