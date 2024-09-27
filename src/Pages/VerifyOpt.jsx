@@ -3,7 +3,7 @@ import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 
 export default function VerifyOTP() {
-  const [verifyotp, setverifyotp] = useState({ email: "", otp: ""});
+  const [verifyotp, setverifyotp] = useState({ email: "", otp: "" });
   const navigate = useNavigate();
 
   const onChange = (e) => {
@@ -13,21 +13,35 @@ export default function VerifyOTP() {
   const handleVerifyOTPSubmit = async (e) => {
     e.preventDefault();
     try {
-        const response = await axios.post('http://localhost:5000/user/verify-otp', {
-            email: verifyotp.email,
-            otp: verifyotp.otp
-        });
+      const response = await axios.post('http://localhost:5000/user/verify-otp', {
+        email: verifyotp.email,
+        otp: verifyotp.otp
+      });
 
-        if (response.data.message === 'User verified successfully') {
-            alert("OTP Verified Successfully");
-            navigate('/'); // Redirect to home page
-        } else {
-            alert("OTP Verification failed: " + response.data.message);
+      if (response.data.message === 'User verified successfully') {
+
+        if (response.data.token) {
+          localStorage.setItem('token', response.data.token);
+          axios.defaults.headers.common['Authorization'] = `Bearer ${response.data.token}`;
+          navigate('/dashboard');
         }
+        alert("OTP Verified Successfully");
+        navigate('/dashboard'); // Redirect to dashboard
+      }
+      else if (response.data.message === 'User verified successfully') {
+        alert("Invalid OTP");
+      }
+      else if (response.data.message === 'OTP expired') {
+        alert("OTP expired");
+      }
+      else {
+        alert("OTP Verification failed: " + response.data.message);
+      }
     } catch (error) {
-        alert("OTP not verified, an error occurred: " + (error.response?.data?.message || error.message));
+      alert("OTP not verified, an error occurred: " + (error.response?.data?.message || error.message));
     }
   };
+
 
 
   return (
@@ -69,9 +83,9 @@ export default function VerifyOTP() {
                 type="submit"
                 className="btn font-bold shadow-lg w-[8rem] hover:bg-primary/80 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-opacity-50"
               >
-        
+
                 Sign Up
-           
+
               </button>
             </div>
           </form>

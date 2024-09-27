@@ -1,9 +1,14 @@
 import React from 'react'
-import { Outlet } from 'react-router-dom'
+import { Navigate, Outlet } from 'react-router-dom'
 import SidePanel from '../Components/SidePanel'
 import Navbar from '../Components/Navbar'
+import { isAuthenticated } from '../utils/authUtils'
 
 export default function DashboardLayout() {
+  // if (!isAuthenticated()) {
+  //   // Redirect to the login page if user is not authenticated
+  //   return <Navigate to="/signin" replace />;
+  // }
   return (
     <div className='font-primary'>
         <SidePanel/>
