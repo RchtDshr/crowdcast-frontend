@@ -136,7 +136,7 @@ export default function CreateAd() {
                     adDetailsArray.push({
                         location: location,
                         ageGroup: ageGroup.value,
-                        ageGroupName:ageGroup.label,
+                        ageGroupName: ageGroup.label,
                         gender: gender,
                     });
                 });
@@ -150,7 +150,7 @@ export default function CreateAd() {
         // });
 
         newFormData.forEach((v, l) => {
-            console.log(v, l )
+            console.log(v, l)
         })
         // console.log(newFormData)
 
@@ -158,8 +158,8 @@ export default function CreateAd() {
 
         try {
             const price = await calculateAdPrice(newFormData);
-            
             setPriceData(price);
+            console.log(price);
             setIsModalOpen(true);
         } catch (error) {
             console.error('Error calculating price:', error);
@@ -167,11 +167,27 @@ export default function CreateAd() {
         }
     };
 
+    // Retrieve the token from localStorage (or sessionStorage)
+    const token = localStorage.getItem('token'); // or wherever you store your JWT
+
     const handleConfirmSubmit = async () => {
         try {
-            const response = await axios.post('http://localhost:5000/api/create-ad', formData, {
-                headers: { 'Content-Type': 'multipart/form-data' },
-            });
+            // Stringify the priceData array
+            const adsData = JSON.stringify(priceData);
+            const adNameData = JSON.stringify(adName);
+            const response = await axios.post('http://localhost:5000/api/create-ad',
+                {
+                    ads: adsData,
+                    adName: adNameData
+                },
+                // Send the stringified data
+                {
+                    headers: {
+                        'Content-Type': 'application/json',  // Change this to application/json
+                        'Authorization': `Bearer ${token}`
+                    },
+                }
+            );
 
             if (response.status === 200) {
                 console.log('Ad submitted successfully:', response.data);
