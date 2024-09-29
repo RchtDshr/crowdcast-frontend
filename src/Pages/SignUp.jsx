@@ -4,39 +4,37 @@ import { useNavigate } from 'react-router-dom';
 import { Eye, EyeOff } from 'lucide-react';
 
 export default function SignUp() {
-    const [signupCredentials, setsignupCredentials] = useState({ name: "", email: "", password: "" });
+    const [signupCredentials, setSignupCredentials] = useState({ name: "", email: "", password: "" });
     const [visible, setVisible] = useState(false);
     const navigate = useNavigate();
 
     const onChange = (e) => {
-        setsignupCredentials({ ...signupCredentials, [e.target.name]: e.target.value });
+        setSignupCredentials({ ...signupCredentials, [e.target.name]: e.target.value });
     };
 
     const handleSignUpSubmit = async (e) => {
         e.preventDefault();
         try {
-            const response = await axios.post('http://localhost:5000/user/signup', {
-                name: signupCredentials.name,
-                email: signupCredentials.email,
-                password: signupCredentials.password
-            });
+            const response = await axios.post('http://localhost:5000/user/signup', signupCredentials);
 
             if (response.data.message === 'User registered. Please verify your email.') {
-                alert("Sign Up Successfull. Please verify your email");
-                navigate('/verify-otp');
+                navigate('/verify-otp', { state: { email: signupCredentials.email } });
+            } else if (response.data.message === 'User already exists'){
+                alert("User already exists");      
+            }  else if (response.data.message === 'Check email to verify OTP'){
+                alert("Check email to verify OTP");      
             } else {
-                alert("Can not sign up: " + response.data.message);
+                alert("Cannot sign up: " + response.data.message);
             }
         } catch (error) {
-            alert("Error during login:", error);
+            console.error("Error during sign up:", error);
+            alert(error.response?.data?.message || "An error occurred during sign up");
         }
     };
-
 
     return (
         <div className='font-primary w-[100vw] h-[100vh] flex justify-center items-center'>
             <div className='bg-white w-[80vw] h-[60vh] shadow-lg rounded-lg flex justify-around px-12 py-20 gap-12'>
-
                 <div className='signin-left flex flex-1 flex-col items-start justify-start gap-2'>
                     <img src="./logo.png" alt="logo" className='w-[60px] h-[60px] ' />
                     <h1 className='font-bold text-3xl'>Welcome to CrowdCast</h1>
@@ -64,7 +62,6 @@ export default function SignUp() {
                                 value={signupCredentials.email}
                                 onChange={onChange}
                                 required
-
                             />
                         </div>
                         <div className="mb-4 relative">
@@ -90,9 +87,7 @@ export default function SignUp() {
                                 type="submit"
                                 className="btn font-bold shadow-lg w-[8rem] hover:bg-primary/80 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-opacity-50"
                             >
-
                                 Sign Up
-
                             </button>
                         </div>
                     </form>

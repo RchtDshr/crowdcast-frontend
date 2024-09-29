@@ -1,12 +1,39 @@
-import React from 'react'
+import React, { useState, useEffect } from 'react';
 import { LayoutDashboard, LogOut, Megaphone, Wallet2 } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
+import axios from 'axios';
+import { getCurrentUser } from '../utils/authUtils';
+
 
 export default function SidePanel() {
+  const [userName, setUserName] = useState('');
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const fetchUserData = async () => {
+      const token = localStorage.getItem('token');
+      if (token) {
+        try {
+          const userData = await getCurrentUser(token);
+          setUserName(userData.name);
+        } catch (error) {
+          console.error('Error setting user data:', error);
+        }
+      }
+    };
+
+    fetchUserData();
+  }, []);
+
+  const handleLogout = () => {
+    localStorage.removeItem('token');
+    delete axios.defaults.headers.common['Authorization'];
+    navigate('/signin');
+  };
   return (
     <div className='text-white z-100 bg-primary h-full w-[20vw] gap-4 fixed z-100 text-wrap p-7 flex flex-col justify-between items-start'>
       <h1 className="welcome text-3xl font-bold">
-        Welcome, Rachita
+        Welcome, {userName}
         {/* add username here */}
       </h1>
       <div className='flex flex-col justify-between items-start h-full'>
@@ -26,8 +53,10 @@ export default function SidePanel() {
 
         </div>
         <div className="logout">
-          <div className="flex gap-3 items-start justify-center">
-            <LogOut /> Logout
+          <div>
+            <button onClick={handleLogout} className="flex gap-3 items-start justify-center">
+              <LogOut /> Logout
+            </button>
           </div>
         </div>
       </div>

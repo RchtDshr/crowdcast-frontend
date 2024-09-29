@@ -21,10 +21,6 @@ const ageGroupMultipliers = {
     "1": 1.0, "2": 1.5, "3": 1.6, "4": 1.3, "5": 1.4, "6": 1.1, "7": 1.0
 };
 
-const genderMultipliers = {
-    "M": 1.1,
-    "F": 1.2
-};
 
 // Function to get video duration
 function getVideoDuration(file) {
