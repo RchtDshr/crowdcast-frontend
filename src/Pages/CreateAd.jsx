@@ -145,15 +145,6 @@ export default function CreateAd() {
 
         newFormData.append('adDetailsArray', JSON.stringify(adDetailsArray));
 
-        // files.forEach((file, index) => {
-        //     newFormData.append(`file${index}`, file);
-        // });
-
-        newFormData.forEach((v, l) => {
-            console.log(v, l)
-        })
-        // console.log(newFormData)
-
         setFormData(newFormData);
 
         try {
