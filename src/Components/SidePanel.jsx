@@ -15,7 +15,8 @@ export default function SidePanel() {
       if (token) {
         try {
           const userData = await getCurrentUser(token);
-          setUserName(userData.name);
+          
+          setUserName(userData.name.split(' ')[0]);
         } catch (error) {
           console.error('Error setting user data:', error);
         }

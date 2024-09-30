@@ -184,7 +184,7 @@ export default function CreateAd() {
             // Stringify the priceData array
             const adsData = JSON.stringify(priceData);
             const adNameData = JSON.stringify(adName);
-            console.log(id)
+            
             const response = await axios.post('http://localhost:5000/api/create-ad',
                 {
                     ads: adsData,
