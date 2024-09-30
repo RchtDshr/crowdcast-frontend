@@ -3,7 +3,6 @@ import { CheckCircle, Upload, X } from 'lucide-react';
 import calculateAdPrice from '../utils/priceCalc';
 import axios from 'axios';
 import ConfirmAdModal from '../Components/ConfirmAdModal';
-import { getCurrentUser } from '../utils/authUtils';
 
 const ageGroups = [
     { value: "1", label: "3-9 years old" },
@@ -118,24 +117,7 @@ export default function CreateAd() {
         setErrors(newErrors);
         return newErrors.length === 0;
     };
-    const [id, setId] = useState('')
-    useEffect(() => {
-        const fetchUserData = async () => {
-          const token = localStorage.getItem('token');
-          if (token) {
-            try {
-              const userData = await getCurrentUser(token);
-              setId(userData.id);
-              console.log(id)
-            } catch (error) {
-              console.error('Error setting user data:', error);
-            }
-          }
-        };
     
-        fetchUserData();
-      }, []);
-
     const handleCalculatePrice = async (e) => {
         e.preventDefault();
 
@@ -184,12 +166,11 @@ export default function CreateAd() {
             // Stringify the priceData array
             const adsData = JSON.stringify(priceData);
             const adNameData = JSON.stringify(adName);
-            
+
             const response = await axios.post('http://localhost:5000/api/create-ad',
                 {
                     ads: adsData,
                     adName: adNameData,
-                    userId: id
                 },
                 // Send the stringified data
                 {
