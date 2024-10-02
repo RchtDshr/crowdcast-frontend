@@ -35,7 +35,7 @@ export default function CreateAd() {
     const [selectedGenders, setSelectedGenders] = useState([]);
     const [isAgeGroupOpen, setIsAgeGroupOpen] = useState(false);
     const [isLocationOpen, setIsLocationOpen] = useState(false);
-    const [files, setFiles] = useState([]);
+    const [file, setFile] = useState(null);
     const [errors, setErrors] = useState({});
 
     const [formData, setFormData] = useState(null);
@@ -76,8 +76,8 @@ export default function CreateAd() {
     };
 
     const handleFileChange = (e) => {
-        const selectedFiles = Array.from(e.target.files);
-        setFiles(selectedFiles);
+        const selectedFile = e.target.files[0];
+        setFile(selectedFile);
     };
 
     const handleDragOver = (e) => {
@@ -88,10 +88,10 @@ export default function CreateAd() {
     const handleDrop = (e) => {
         e.preventDefault();
         e.stopPropagation();
-        const droppedFiles = Array.from(e.dataTransfer.files).filter(
-            file => file.type.startsWith('image/') || file.type.startsWith('video/')
-        );
-        setFiles(droppedFiles);
+        const droppedFile = e.dataTransfer.files[0];
+        if (droppedFile && (droppedFile.type.startsWith('image/') || droppedFile.type.startsWith('video/'))) {
+            setFile(droppedFile);
+        }
     };
 
     const handleReupload = () => {
@@ -101,8 +101,8 @@ export default function CreateAd() {
         }
     };
 
-    const handleRemoveFile = (index) => {
-        setFiles(prevFiles => prevFiles.filter((_, i) => i !== index));
+    const handleRemoveFile = () => {
+        setFile(null);
     };
 
     const validateForm = () => {
@@ -112,7 +112,7 @@ export default function CreateAd() {
         if (selectedAgeGroups.length === 0) newErrors.push("Please select at least one age group");
         if (selectedGenders.length === 0) newErrors.push("Please select at least one gender");
         if (selectedLocations.length === 0) newErrors.push("Please select at least one location");
-        if (files.length === 0) newErrors.push("Please upload at least one file");
+        if (!file) newErrors.push("Please upload a file");
 
         setErrors(newErrors);
         return newErrors.length === 0;
@@ -127,8 +127,6 @@ export default function CreateAd() {
 
         const newFormData = new FormData(e.target);
 
-        // newFormData.append('adName', adName);
-        // Create an array of objects with combinations of location, age group, and gender
         const adDetailsArray = [];
         selectedLocations.forEach((location) => {
             selectedAgeGroups.forEach((ageGroup) => {
@@ -146,11 +144,12 @@ export default function CreateAd() {
         newFormData.append('adDetailsArray', JSON.stringify(adDetailsArray));
 
         setFormData(newFormData);
+        // console.log(file)
 
         try {
             const price = await calculateAdPrice(newFormData);
             setPriceData(price);
-            console.log(price);
+          
             setIsModalOpen(true);
         } catch (error) {
             console.error('Error calculating price:', error);
@@ -195,7 +194,6 @@ export default function CreateAd() {
         }
     };
 
-
     useEffect(() => {
         const handleClickOutside = (event) => {
             if (ageGroupRef.current && !ageGroupRef.current.contains(event.target)) {
@@ -211,7 +209,6 @@ export default function CreateAd() {
             document.removeEventListener('mousedown', handleClickOutside);
         };
     }, []);
-
     return (
         <div className='p-4 z-0 w-[79vw]'>
             <form onSubmit={handleCalculatePrice}>
@@ -235,15 +232,14 @@ export default function CreateAd() {
                     <div className="box">
                         Upload Advertisement:
                         <div
-                            // className="w-full h-32 border-2 mt-2 border-dashed border-gray-300 rounded-lg p-4 text-center cursor-pointer hover:border-primary transition-colors duration-300 flex flex-col items-center justify-center"
-                            className={`w-full h-32 border-2 mt-2 border-dashed ${errors.files ? 'border-red-500' : 'border-gray-300'} rounded-lg p-4 text-center cursor-pointer hover:border-primary transition-colors duration-300 flex flex-col items-center justify-center`}
+                            className={`w-full h-32 border-2 mt-2 border-dashed ${errors.file ? 'border-red-500' : 'border-gray-300'} rounded-lg p-4 text-center cursor-pointer hover:border-primary transition-colors duration-300 flex flex-col items-center justify-center`}
                             onDragOver={handleDragOver}
                             onDrop={handleDrop}
                             onClick={handleReupload}
                         >
                             <Upload className="w-8 h-8 text-gray-400 mb-2" />
                             <p className="text-sm text-gray-500">
-                                {files.length > 0 ? 'Click to reupload or drag and drop a new file' : 'Drag and drop file here or click to browse'}
+                                {file ? 'Click to reupload or drag and drop a new file' : 'Drag and drop file here or click to browse'}
                             </p>
                             <input
                                 ref={fileInputRef}
@@ -254,34 +250,30 @@ export default function CreateAd() {
                                 className="hidden"
                             />
                         </div>
-                        {files.length > 0 && (
+                        {file && (
                             <div className="mt-2">
-                                <p className="text-sm font-semibold mb-2">Selected files:</p>
-                                <div className="grid grid-cols-3 gap-2">
-                                    {files.map((file, index) => (
-                                        <div key={index} className="relative">
-                                            {file.type.startsWith('image/') ? (
-                                                <img
-                                                    src={URL.createObjectURL(file)}
-                                                    alt={file.name}
-                                                    className="w-full h-24 object-cover rounded-md"
-                                                />
-                                            ) : (
-                                                <video
-                                                    src={URL.createObjectURL(file)}
-                                                    className="w-full h-24 object-cover rounded-md"
-                                                />
-                                            )}
-                                            <button
-                                                type="button"
-                                                onClick={() => handleRemoveFile(index)}
-                                                className="absolute top-1 right-1 bg-red-500 text-white rounded-full p-1 hover:bg-red-600 transition-colors duration-300"
-                                            >
-                                                <X size={16} />
-                                            </button>
-                                            <p className="text-xs mt-1 truncate">{file.name}</p>
-                                        </div>
-                                    ))}
+                                <p className="text-sm font-semibold mb-2">Selected file:</p>
+                                <div className="relative">
+                                    {file.type.startsWith('image/') ? (
+                                        <img
+                                            src={URL.createObjectURL(file)}
+                                            alt={file.name}
+                                            className="w-full h-24 object-cover rounded-md"
+                                        />
+                                    ) : (
+                                        <video
+                                            src={URL.createObjectURL(file)}
+                                            className="w-full h-24 object-cover rounded-md"
+                                        />
+                                    )}
+                                    <button
+                                        type="button"
+                                        onClick={handleRemoveFile}
+                                        className="absolute top-1 right-1 bg-red-500 text-white rounded-full p-1 hover:bg-red-600 transition-colors duration-300"
+                                    >
+                                        <X size={16} />
+                                    </button>
+                                    <p className="text-xs mt-1 truncate">{file.name}</p>
                                 </div>
                             </div>
                         )}
