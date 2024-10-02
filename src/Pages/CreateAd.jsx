@@ -42,6 +42,9 @@ export default function CreateAd() {
     const [priceData, setPriceData] = useState([]);
     const [isModalOpen, setIsModalOpen] = useState(false);
 
+    const [isUploading, setIsUploading] = useState(false);
+
+
     const ageGroupRef = useRef(null);
     const locationRef = useRef(null);
     const fileInputRef = useRef(null);
@@ -75,9 +78,11 @@ export default function CreateAd() {
         );
     };
 
-    const handleFileChange = (e) => {
+    const handleFileChange = async (e) => {
         const selectedFile = e.target.files[0];
-        setFile(selectedFile);
+        if (selectedFile) {
+            await uploadFile(selectedFile);
+        }
     };
 
     const handleDragOver = (e) => {
@@ -85,12 +90,12 @@ export default function CreateAd() {
         e.stopPropagation();
     };
 
-    const handleDrop = (e) => {
+    const handleDrop = async (e) => {
         e.preventDefault();
         e.stopPropagation();
         const droppedFile = e.dataTransfer.files[0];
         if (droppedFile && (droppedFile.type.startsWith('image/') || droppedFile.type.startsWith('video/'))) {
-            setFile(droppedFile);
+            await uploadFile(droppedFile);
         }
     };
 
@@ -101,8 +106,46 @@ export default function CreateAd() {
         }
     };
 
-    const handleRemoveFile = () => {
-        setFile(null);
+    const handleRemoveFile = async () => {
+        try {
+            if (file && file.publicId) {
+                await axios.post('http://localhost:5000/api/remove', { publicId: file.publicId });
+            }
+            setFile(null);
+            setErrors((prev) => ({ ...prev, file: undefined }));
+        } catch (error) {
+            console.error('Error removing file:', error);
+        }
+    };
+
+    const uploadFile = async (fileToUpload) => {
+        try {
+            setIsUploading(true);
+            const formData = new FormData();
+            formData.append('file', fileToUpload);
+
+            if (file && file.publicId) {
+                // If there's an existing file, remove it first
+                await axios.post('http://localhost:5000/api/remove', { publicId: file.publicId });
+            }
+
+            const response = await axios.post('http://localhost:5000/api/upload', formData, {
+                headers: { 'Content-Type': 'multipart/form-data' },
+            });
+
+            setFile({
+                name: fileToUpload.name,
+                type: fileToUpload.type,
+                publicId: response.data.publicId,
+                url: response.data.url,
+            });
+            setErrors((prev) => ({ ...prev, file: undefined }));
+        } catch (error) {
+            console.error('Error uploading file:', error);
+            setErrors((prev) => ({ ...prev, file: 'Error uploading file' }));
+        } finally {
+            setIsUploading(false);
+        }
     };
 
     const validateForm = () => {
@@ -117,7 +160,7 @@ export default function CreateAd() {
         setErrors(newErrors);
         return newErrors.length === 0;
     };
-    
+
     const handleCalculatePrice = async (e) => {
         e.preventDefault();
 
@@ -149,7 +192,7 @@ export default function CreateAd() {
         try {
             const price = await calculateAdPrice(newFormData);
             setPriceData(price);
-          
+
             setIsModalOpen(true);
         } catch (error) {
             console.error('Error calculating price:', error);
@@ -237,10 +280,19 @@ export default function CreateAd() {
                             onDrop={handleDrop}
                             onClick={handleReupload}
                         >
-                            <Upload className="w-8 h-8 text-gray-400 mb-2" />
-                            <p className="text-sm text-gray-500">
-                                {file ? 'Click to reupload or drag and drop a new file' : 'Drag and drop file here or click to browse'}
-                            </p>
+                            {isUploading ? (
+                                <div className="flex flex-col items-center">
+                                    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+                                    <p className="text-sm text-gray-500 mt-2">Uploading...</p>
+                                </div>
+                            ) : (
+                                <>
+                                    <Upload className="w-8 h-8 text-gray-400 mb-2" />
+                                    <p className="text-sm text-gray-500">
+                                        {file ? 'Click to reupload or drag and drop a new file' : 'Drag and drop file here or click to browse'}
+                                    </p>
+                                </>
+                            )}
                             <input
                                 ref={fileInputRef}
                                 type="file"
@@ -256,14 +308,15 @@ export default function CreateAd() {
                                 <div className="relative">
                                     {file.type.startsWith('image/') ? (
                                         <img
-                                            src={URL.createObjectURL(file)}
+                                            src={file.url}
                                             alt={file.name}
                                             className="w-full h-24 object-cover rounded-md"
                                         />
                                     ) : (
                                         <video
-                                            src={URL.createObjectURL(file)}
+                                            src={file.url}
                                             className="w-full h-24 object-cover rounded-md"
+                                            controls
                                         />
                                     )}
                                     <button
@@ -277,6 +330,7 @@ export default function CreateAd() {
                                 </div>
                             </div>
                         )}
+                        {errors.file && <p className="text-red-500 text-xs mt-1">{errors.file}</p>}
                     </div>
 
                     {/* select locations */}
