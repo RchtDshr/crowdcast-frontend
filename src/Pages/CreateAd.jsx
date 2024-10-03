@@ -138,7 +138,10 @@ export default function CreateAd() {
                 type: fileToUpload.type,
                 publicId: response.data.publicId,
                 url: response.data.url,
+                resourceType: response.data.resourceType,
+                duration: response.data.duration ? response.data.duration : 5
             });
+            
             setErrors((prev) => ({ ...prev, file: undefined }));
         } catch (error) {
             console.error('Error uploading file:', error);
@@ -179,15 +182,20 @@ export default function CreateAd() {
                         ageGroup: ageGroup.value,
                         ageGroupName: ageGroup.label,
                         gender: gender,
+                        fileUpload:file.url
+                        
                     });
                 });
             });
         });
-
+        newFormData.append('file',JSON.stringify(file));
         newFormData.append('adDetailsArray', JSON.stringify(adDetailsArray));
 
         setFormData(newFormData);
-        // console.log(file)
+        newFormData.forEach((value, key) => {
+            console.log(key + ': ' + value);
+        });
+        
 
         try {
             const price = await calculateAdPrice(newFormData);
@@ -310,12 +318,12 @@ export default function CreateAd() {
                                         <img
                                             src={file.url}
                                             alt={file.name}
-                                            className="w-full h-24 object-cover rounded-md"
+                                            className="w-full h-56 object-cover rounded-md"
                                         />
                                     ) : (
                                         <video
                                             src={file.url}
-                                            className="w-full h-24 object-cover rounded-md"
+                                            className="w-full h-64 object-cover rounded-md"
                                             controls
                                         />
                                     )}
