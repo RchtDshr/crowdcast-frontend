@@ -23,24 +23,7 @@ const ageGroupMultipliers = {
 };
 
 
-// Function to get video duration
-function getVideoDuration(file) {
-    return new Promise((resolve, reject) => {
-        const video = document.createElement('video');
-        video.preload = 'metadata';
 
-        video.onloadedmetadata = function () {
-            window.URL.revokeObjectURL(video.src);
-            resolve(video.duration);
-        }
-
-        video.onerror = function () {
-            reject("Error loading video file");
-        }
-
-        video.src = URL.createObjectURL(file);
-    });
-}
 
 async function calculateAdPrice(formData) {
     // Extract and parse data from FormData
@@ -88,6 +71,7 @@ async function calculateAdPrice(formData) {
             ageGroup,
             ageGroupName,
             gender,
+            fileUpload:fileUpload,
             price: finalPrice,
         });
     }
