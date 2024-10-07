@@ -3,6 +3,9 @@ import { CheckCircle, Upload, X } from 'lucide-react';
 import calculateAdPrice from '../utils/priceCalc';
 import axios from 'axios';
 import ConfirmAdModal from '../Components/ConfirmAdModal';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+
 
 const ageGroups = [
     { value: "1", label: "3-9 years old" },
@@ -141,7 +144,7 @@ export default function CreateAd() {
                 resourceType: response.data.resourceType,
                 duration: response.data.duration ? response.data.duration : 5
             });
-            
+
             setErrors((prev) => ({ ...prev, file: undefined }));
         } catch (error) {
             console.error('Error uploading file:', error);
@@ -182,20 +185,20 @@ export default function CreateAd() {
                         ageGroup: ageGroup.value,
                         ageGroupName: ageGroup.label,
                         gender: gender,
-                        fileUpload:file.url
-                        
+                        fileUpload: file.url
+
                     });
                 });
             });
         });
-        newFormData.append('file',JSON.stringify(file));
+        newFormData.append('file', JSON.stringify(file));
         newFormData.append('adDetailsArray', JSON.stringify(adDetailsArray));
 
         setFormData(newFormData);
         newFormData.forEach((value, key) => {
             console.log(key + ': ' + value);
         });
-        
+
 
         try {
             const price = await calculateAdPrice(newFormData);
@@ -213,7 +216,6 @@ export default function CreateAd() {
 
     const handleConfirmSubmit = async () => {
         try {
-            // Stringify the priceData array
             const adsData = JSON.stringify(priceData);
             const adNameData = JSON.stringify(adName);
 
@@ -222,10 +224,9 @@ export default function CreateAd() {
                     ads: adsData,
                     adName: adNameData,
                 },
-                // Send the stringified data
                 {
                     headers: {
-                        'Content-Type': 'application/json',  // Change this to application/json
+                        'Content-Type': 'application/json',
                         'Authorization': `Bearer ${token}`
                     },
                 }
@@ -233,17 +234,25 @@ export default function CreateAd() {
 
             if (response.status === 200) {
                 console.log('Ad submitted successfully:', response.data);
-                // Handle success (e.g., show a success message, redirect, etc.)
                 setIsModalOpen(false);
+                toast.success('Ad created successfully!', {
+                     position: "bottom-center"
+                });
             } else {
                 console.error('Failed to submit ad');
-                // Handle error (e.g., show an error message)
+                toast.error('Failed to submit ad', {
+                     position: "bottom-center"
+                });
             }
         } catch (error) {
             console.error('Error submitting ad:', error);
-            // Handle error (e.g., show an error message)
+            toast.error('An error occurred while submitting the ad', {
+                 position: "bottom-center"
+            });
         }
     };
+
+
 
     useEffect(() => {
         const handleClickOutside = (event) => {
@@ -261,6 +270,7 @@ export default function CreateAd() {
         };
     }, []);
     return (
+
         <div className='p-4 z-0 w-[79vw]'>
             <form onSubmit={handleCalculatePrice}>
 
@@ -459,6 +469,7 @@ export default function CreateAd() {
                     priceData={priceData}
                 />
             )}
+            <ToastContainer />
         </div>
     );
 }
