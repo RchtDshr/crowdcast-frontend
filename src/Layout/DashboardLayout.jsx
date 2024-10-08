@@ -10,7 +10,7 @@ export default function DashboardLayout() {
   //   return <Navigate to="/signin" replace />;
   // }
   return (
-    <div className='font-primary'>
+    <div className='font-primary w-screen h-screen'>
         <SidePanel/>
         <Navbar/>
         <div className="relative h-full z-0 left-[20vw] top-20 w-[80vw] overflow-x-hidden">

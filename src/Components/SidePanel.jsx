@@ -32,8 +32,8 @@ export default function SidePanel() {
     navigate('/signin');
   };
   return (
-    <div className='text-white z-100 bg-primary h-full w-[20vw] gap-4 fixed z-100 text-wrap p-7 flex flex-col justify-between items-start'>
-      <h1 className="welcome text-3xl font-bold">
+    <div className='text-white z-100 bg-primary h-full w-[20vw] gap-4 fixed text-wrap md:p-7 p-5 flex flex-col justify-between items-start'>
+      <h1 className="welcome text-wrap text-3xl font-bold break-words">
         Welcome, {userName}
         {/* add username here */}
       </h1>
