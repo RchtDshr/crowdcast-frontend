@@ -57,7 +57,7 @@ export default function AdDetails() {
             {!ads && !error && <p>Loading...</p>}
             
             {/* Handle errors */}
-            {error && <p style={{ color: 'red' }}>{error}</p>}
+            {error && <p className=' text-red-600 p-4'>{error}</p>}
 
             {/* Handle case where no ads are posted yet */}
             {ads && Object.keys(ads).length === 0 && <p>No ads posted yet.</p>}
@@ -68,7 +68,7 @@ export default function AdDetails() {
                     {/* Ad name and credits */}
                     <div className="box col-span-2">Currently showing ad:
                         <div className="flex justify-between items-center">
-                            <span className='text-2xl font-bold text-primary mt-2'> {ads.adName} </span>
+                            <span className='text-2xl font-bold text-primary mt-2'> {ads.adName ? ads.adName : "No ad made"} </span>
                             <p className='text-sm'>
                                 Credits used:
                                 <span className='ml-2 text-2xl font-bold text-primary'>{ads.creditsDeducted}</span>

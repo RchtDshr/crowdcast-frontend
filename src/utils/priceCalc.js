@@ -1,6 +1,6 @@
 // Constants for pricing (same as before)
-const BASE_IMAGE_PRICE = 200; //image stays on screen for 5 seconds
-const VIDEO_PRICE_PER_SECOND = 40;
+const BASE_IMAGE_PRICE = 180; //image stays on screen for 5 seconds
+const VIDEO_PRICE_PER_SECOND = 30;
 const MIN_VIDEO_DURATION = 5;
 let adTypePrice=0;
 
@@ -19,7 +19,7 @@ const locationPrices = {
 };
 
 const ageGroupMultipliers = {
-    "1": 1.0, "2": 1.5, "3": 1.6, "4": 1.3, "5": 1.4, "6": 1.1, "7": 1.0
+    "1": 1.0, "2": 1.4, "3": 1.5, "4": 1.3, "5": 1.3, "6": 1.1, "7": 1.0
 };
 
 
