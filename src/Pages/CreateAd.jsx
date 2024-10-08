@@ -238,6 +238,11 @@ export default function CreateAd() {
                 toast.success('Ad created successfully!', {
                      position: "bottom-center"
                 });
+                setAdName('')
+                setFile(null)
+                setSelectedAgeGroups([])
+                setSelectedGenders([])
+                setSelectedLocations([])
             } else {
                 console.error('Failed to submit ad');
                 toast.error('Failed to submit ad', {
