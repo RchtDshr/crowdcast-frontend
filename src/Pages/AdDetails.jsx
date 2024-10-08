@@ -1,9 +1,24 @@
 import axios from 'axios';
 import React, { useEffect, useState } from 'react';
 
+const ageGroups = [
+    { value: "1", label: "3-9 years old" },
+    { value: "2", label: "10-19 years old" },
+    { value: "3", label: "20-29 years old" },
+    { value: "4", label: "30-39 years old" },
+    { value: "5", label: "40-49 years old" },
+    { value: "6", label: "50-59 years old" },
+    { value: "7", label: "60-70 years old" }
+];
+
 export default function AdDetails() {
     const [ads, setAds] = useState(null);  // Since we are fetching a single object now, it's not an array
     const [error, setError] = useState(null);
+
+    const getAgeRange = (value) => {
+        const group = ageGroups.find(group => group.value === value);
+        return group ? group.label : 'Unknown';
+    };
 
     // Function to fetch ads
     const fetchAds = async () => {
@@ -65,10 +80,10 @@ export default function AdDetails() {
                     <div className="box flex flex-col justify-start items-start">
                         <p>Age Category/ies selected: </p>
                         <div className='selected-ages text-2xl text-primary font-bold'>
-                            {ads.ageGroups && ads.ageGroups.length > 0 ? (
+                        {ads.ageGroups && ads.ageGroups.length > 0 ? (
                                 ads.ageGroups.map((age, index) => (
                                     <ul key={index}>
-                                        <li>{age}</li>
+                                        <li>{getAgeRange(age)}</li>
                                     </ul>
                                 ))
                             ) : (
