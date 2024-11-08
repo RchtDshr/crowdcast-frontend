@@ -9,6 +9,7 @@ import AdDetails from './Pages/AdDetails';
 import CreateAd from './Pages/CreateAd';
 import Wallet from './Pages/Wallet';
 import { setAuthToken } from './utils/authUtils';
+import WalletPage from './Pages/WalletPage';
 
 // ProtectedRoute component
 const ProtectedRoute = ({ children }) => {
@@ -37,7 +38,7 @@ function App() {
           <Route index element={<AdDetails />} />
           <Route path="dashboard" element={<AdDetails />} />
           <Route path="create-ad" element={<CreateAd />} />
-          <Route path="wallet" element={<Wallet />} />
+          <Route path="wallet" element={<WalletPage />} />
         </Route>
 
         {/* Public Routes */}

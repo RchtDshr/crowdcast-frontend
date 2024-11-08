@@ -31,3 +31,28 @@ export async function getCurrentUser(token) {
     throw error;
   }
 }
+
+export async function addCredits(token, credits) {
+  try {
+    const response = await fetch('http://localhost:5000/user/addCredits', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ credits }) // Send credits in the request body
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.message || 'Failed to add credits');
+    }
+
+    const data = await response.json(); // Read the response body once
+
+    return data;
+  } catch (error) {
+    console.error('Error adding credits:', error);
+    throw error;
+  }
+}
