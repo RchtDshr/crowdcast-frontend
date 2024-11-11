@@ -276,7 +276,7 @@ export default function CreateAd() {
     }, []);
     return (
 
-        <div className='p-4 z-0 w-[79vw]'>
+        <div className='z-0 w-[79vw]'>
             <form onSubmit={handleCalculatePrice}>
 
                 <div className='grid grid-cols-2 gap-2'>

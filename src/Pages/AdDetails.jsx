@@ -64,7 +64,7 @@ export default function AdDetails() {
 
             {/* Render ads details */}
             {ads && Object.keys(ads).length > 0 && (
-                <div className='p-4 h-full grid grid-cols-2 gap-2'>
+                <div className='h-full grid grid-cols-2 gap-2'>
                     {/* Ad name and credits */}
                     <div className="box col-span-2">Currently showing ad:
                         <div className="flex justify-between items-center">

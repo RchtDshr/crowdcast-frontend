@@ -7,7 +7,6 @@ import VerifyOTP from './Pages/VerifyOpt';
 import DashboardLayout from './Layout/DashboardLayout';
 import AdDetails from './Pages/AdDetails';
 import CreateAd from './Pages/CreateAd';
-import Wallet from './Pages/Wallet';
 import { setAuthToken } from './utils/authUtils';
 import WalletPage from './Pages/WalletPage';
 
