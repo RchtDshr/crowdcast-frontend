@@ -46,9 +46,10 @@ async function calculateAdPrice(formData) {
 
 
         if (type.startsWith('image')) {
+            adTypePrice=0;
             adTypePrice += BASE_IMAGE_PRICE;
         } else if (type.startsWith('video')) {
-            try {
+            try {adTypePrice=0;
             } catch (error) {
                 console.error("Error getting video duration:", error);
                 // Use a default duration if there's an error

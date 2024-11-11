@@ -202,6 +202,7 @@ export default function CreateAd() {
 
         try {
             const price = await calculateAdPrice(newFormData);
+            console.log(price);
             setPriceData(price);
 
             setIsModalOpen(true);
@@ -469,7 +470,10 @@ export default function CreateAd() {
             </form>
             {isModalOpen && (
                 <ConfirmAdModal
-                    onClose={() => setIsModalOpen(false)}
+                onClose={() => {
+                    setPriceData([]); 
+                    setIsModalOpen(false);
+                }}
                     onSubmit={handleConfirmSubmit}
                     priceData={priceData}
                 />
