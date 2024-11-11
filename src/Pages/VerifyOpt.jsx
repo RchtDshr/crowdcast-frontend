@@ -1,6 +1,9 @@
 import React, { useState } from 'react'
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+
 
 export default function VerifyOTP() {
   const [verifyotp, setverifyotp] = useState({ email: "", otp: "" });
@@ -25,20 +28,30 @@ export default function VerifyOTP() {
           axios.defaults.headers.common['Authorization'] = `Bearer ${response.data.token}`;
           navigate('/dashboard');
         }
-        alert("OTP Verified Successfully");
+        localStorage.setItem('signInSuccess', 'true');
         navigate('/dashboard'); // Redirect to dashboard
       }
       else if (response.data.message === 'User verified successfully') {
-        alert("Invalid OTP");
+        toast.error('Invalid OTP', {
+          position: "bottom-center"
+        });
       }
       else if (response.data.message === 'OTP expired') {
-        alert("OTP expired");
+        toast.error('OTP Expired', {
+          position: "bottom-center"
+        });
       }
       else {
-        alert("OTP Verification failed: " + response.data.message);
+        toast.error("OTP Verification failed: " + response.data.message, {
+          position: "bottom-center"
+        });
+
       }
     } catch (error) {
-      alert("OTP not verified, an error occurred: " + (error.response?.data?.message || error.message));
+      toast.error("OTP Verification failed: " + (error.response?.data?.message || error.message), {
+        position: "bottom-center"
+      });
+
     }
   };
 
@@ -46,6 +59,7 @@ export default function VerifyOTP() {
 
   return (
     <div className='font-primary w-[100vw] h-[100vh] flex justify-center items-center'>
+      <ToastContainer />
       <div className='bg-white w-[80vw] h-[60vh] shadow-lg rounded-lg flex justify-around px-12 py-20 gap-12'>
 
         <div className='signin-left flex flex-1 flex-col items-start justify-start gap-2'>

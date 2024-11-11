@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Eye, EyeOff } from 'lucide-react';
 import axios from 'axios';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 export default function Signin() {
     const [signinCredentials, setSigninCredentials] = useState({ email: "", password: "" });
@@ -14,12 +16,12 @@ export default function Signin() {
 
     const handleSignInSubmit = async (e) => {
         e.preventDefault();
-        
+
         try {
             const response = await axios.post('http://localhost:5000/user/signin', signinCredentials);
-            
+
             // const { token, userId, userEmail } = response.data;
-            
+
             // Store the JWT token in localStorage
             // localStorage.setItem('token', token);
             // localStorage.setItem('userId', userId);
@@ -29,13 +31,17 @@ export default function Signin() {
             // axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
 
             if (response.data.token) {
-              localStorage.setItem('token', response.data.token);
-              axios.defaults.headers.common['Authorization'] = `Bearer ${response.data.token}`;
-              navigate('/dashboard');
+                localStorage.setItem('token', response.data.token);
+                axios.defaults.headers.common['Authorization'] = `Bearer ${response.data.token}`;
+                localStorage.setItem('signInSuccess', 'true');
+                navigate('/dashboard');
             }
         } catch (error) {
             console.error('Error during sign-in:', error);
-            alert(error.response?.data?.message || "An error occurred during sign-in");
+            toast.error('Sign In Failed', {
+                position: "bottom-center"
+            });
+            
         }
     };
 
@@ -92,6 +98,7 @@ export default function Signin() {
                     </form>
                 </div>
             </div>
+            <ToastContainer />
         </div>
     );
 }

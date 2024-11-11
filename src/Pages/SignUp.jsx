@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import { Eye, EyeOff } from 'lucide-react';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 export default function SignUp() {
     const [signupCredentials, setSignupCredentials] = useState({ name: "", email: "", password: "" });
@@ -36,7 +38,9 @@ export default function SignUp() {
     const handleSignUpSubmit = async (e) => {
         e.preventDefault();
         if (!isPasswordValid) {
-            alert("Please provide a valid password");
+            toast.error('Please Enter a Valid Password',{
+                position:"bottom-center"
+            });
             return;
         }
         try {
@@ -45,11 +49,14 @@ export default function SignUp() {
             if (response.data.message === 'User registered. Please verify your email.') {
                 navigate('/verify-otp', { state: { email: signupCredentials.email } });
             } else if (response.data.message === 'User already exists') {
-                alert("User already exists");
+                toast.error('User Already Exist');
             } else if (response.data.message === 'Check email to verify OTP') {
-                alert("Check email to verify OTP");
+                toast.success('OTP SENT',{
+                    position:"bottom-center"
+                });
+                
             } else {
-                alert("Cannot sign up: " + response.data.message);
+                toast.error('Error While Signing Up');
             }
         } catch (error) {
             console.error("Error during sign up:", error);
@@ -123,6 +130,7 @@ export default function SignUp() {
                     </form>
                 </div>
             </div>
+            <ToastContainer />
         </div>
     );
 }

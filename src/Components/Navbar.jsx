@@ -26,15 +26,7 @@ export default function Navbar() {
         <h1 className="font-bold text-2xl">CrowdCast</h1>
       </div>
 
-      <div className="balance">
-        <p className="text-sm">
-          Wallet Balance
-          <span className="ml-2 text-2xl font-bold text-primary">
-            {credit}
-          </span>{" "}
-          {/*add from the api the balance*/}
-        </p>
-      </div>
+      
     </div>
   );
 }

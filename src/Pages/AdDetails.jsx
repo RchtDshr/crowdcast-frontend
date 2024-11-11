@@ -1,6 +1,8 @@
 import axios from 'axios';
 import React, { useEffect, useState } from 'react';
 import AdTriggerTable from '../Components/AdTriggerTable';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 const ageGroups = [
     { value: "1", label: "3-9 years old" },
@@ -13,6 +15,18 @@ const ageGroups = [
 ];
 
 export default function AdDetails() {
+    useEffect(() => {
+        if (localStorage.getItem('signInSuccess') === 'true') {
+            setTimeout(() => {
+                toast.success('Sign In Successful!', {
+                    position: 'bottom-center',
+                });
+            }, 500);  // Adjust delay if needed
+            localStorage.removeItem('signInSuccess');
+        } // Reset flag
+    }
+        , []);
+
     const [ads, setAds] = useState(null);  // Since we are fetching a single object now, it's not an array
     const [error, setError] = useState(null);
 
@@ -55,8 +69,9 @@ export default function AdDetails() {
     return (
         <div>
             {/* Handle loading state */}
+            <ToastContainer />
             {!ads && !error && <p>Loading...</p>}
-            
+
             {/* Handle errors */}
             {error && <p className=' text-red-600 p-4'>{error}</p>}
 
@@ -81,7 +96,7 @@ export default function AdDetails() {
                     <div className="box flex flex-col justify-start items-start">
                         <p>Age Category/ies selected: </p>
                         <div className='selected-ages text-2xl text-primary font-bold'>
-                        {ads.ageGroups && ads.ageGroups.length > 0 ? (
+                            {ads.ageGroups && ads.ageGroups.length > 0 ? (
                                 ads.ageGroups.map((age, index) => (
                                     <ul key={index}>
                                         <li>{getAgeRange(age)}</li>
@@ -126,10 +141,12 @@ export default function AdDetails() {
                     </div>
 
                     <div className='box col-span-2'>
-                        <AdTriggerTable/>
+                        <AdTriggerTable />
                     </div>
+
                 </div>
             )}
+
         </div>
     );
 }
