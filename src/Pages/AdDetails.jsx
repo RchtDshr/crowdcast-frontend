@@ -1,5 +1,6 @@
 import axios from 'axios';
 import React, { useEffect, useState } from 'react';
+import AdTriggerTable from '../Components/AdTriggerTable';
 
 const ageGroups = [
     { value: "1", label: "3-9 years old" },
@@ -122,6 +123,10 @@ export default function AdDetails() {
                                 <p>No genders selected</p>
                             )}
                         </div>
+                    </div>
+
+                    <div className='box col-span-2'>
+                        <AdTriggerTable/>
                     </div>
                 </div>
             )}

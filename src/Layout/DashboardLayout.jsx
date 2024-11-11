@@ -13,7 +13,7 @@ export default function DashboardLayout() {
     <div className='font-primary w-screen h-screen'>
         <SidePanel/>
         <Navbar/>
-        <div className="relative h-full p-2 z-0 left-[20vw] top-20 w-[80vw] overflow-x-hidden">
+        <div className="relative h-full p-4 z-0 left-[20vw] top-20 w-[80vw] overflow-x-hidden">
             <Outlet />
         </div>
     </div>
