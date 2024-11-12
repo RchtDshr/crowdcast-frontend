@@ -202,7 +202,6 @@ export default function CreateAd() {
 
         try {
             const price = await calculateAdPrice(newFormData);
-            console.log(price);
             setPriceData(price);
 
             setIsModalOpen(true);
@@ -218,12 +217,15 @@ export default function CreateAd() {
     const handleConfirmSubmit = async () => {
         try {
             const adsData = JSON.stringify(priceData);
+            console.log(adsData);
+            console.log(file);
             // const adNameData = JSON.stringify(adName);
 
             const response = await axios.post('http://localhost:5000/api/create-ad',
                 {
                     ads: adsData,
                     adName: adName,
+                    type:file.type
                 },
                 {
                     headers: {

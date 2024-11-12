@@ -15,19 +15,8 @@ const ageGroups = [
 ];
 
 export default function AdDetails() {
-    useEffect(() => {
-        if (localStorage.getItem('signInSuccess') === 'true') {
-            setTimeout(() => {
-                toast.success('Sign In Successful!', {
-                    position: 'bottom-center',
-                });
-            }, 500);  // Adjust delay if needed
-            localStorage.removeItem('signInSuccess');
-        } // Reset flag
-    }
-        , []);
-
-    const [ads, setAds] = useState(null);  // Since we are fetching a single object now, it's not an array
+    const [ads, setAds] = useState(null);
+    const [TimelineEntries, setTimelineEntries] = useState([]);
     const [error, setError] = useState(null);
 
     const getAgeRange = (value) => {
@@ -35,59 +24,78 @@ export default function AdDetails() {
         return group ? group.label : 'Unknown';
     };
 
-    // Function to fetch ads
     const fetchAds = async () => {
         try {
-            // Retrieve the token from localStorage or sessionStorage
-            const token = localStorage.getItem('token');  // Make sure to store the token here during login
-
-            // If no token is available, handle it accordingly
+            const token = localStorage.getItem('token');
             if (!token) {
                 throw new Error('No token found. Please log in.');
             }
-
-            // Make the GET request to fetch the user's ads
             const response = await axios.get('http://localhost:5000/api/getdetails', {
                 headers: {
-                    Authorization: `Bearer ${token}`  // Add the JWT token in Authorization header
+                    Authorization: `Bearer ${token}`
                 }
             });
-
-            // Set the ads from the response (which is now an object)
             setAds(response.data.ads);
         } catch (error) {
-            // Handle any errors
             setError(error.response ? error.response.data.message : error.message);
         }
     };
 
-    // Fetch ads on component mount
+    const fetchTimeline = async () => {
+        try {
+            const token = localStorage.getItem('token');
+            if (!token) {
+                throw new Error('No token found. Please log in.');
+            }
+            const response = await axios.get('http://localhost:5000/user/getUserTimeline', {
+                headers: {
+                    Authorization: `Bearer ${token}`
+                }
+            });
+            setTimelineEntries(response.data.data);
+        } catch (error) {
+            setError(error.response ? error.response.data.message : error.message);
+        }
+    };
+
     useEffect(() => {
+        if (localStorage.getItem('signInSuccess') === 'true') {
+            setTimeout(() => {
+                toast.success('Sign In Successful!', {
+                    position: 'bottom-center',
+                });
+            }, 500);
+            localStorage.removeItem('signInSuccess');
+        }
         fetchAds();
+        fetchTimeline();
     }, []);
+
+    // Calculate total deducted credits
+    const totalDeductedCredits = TimelineEntries.reduce(
+        (total, entry) => total + (entry.deductedAmount || 0), 0
+    );
 
     return (
         <div>
-            {/* Handle loading state */}
             <ToastContainer />
             {!ads && !error && <p>Loading...</p>}
-
-            {/* Handle errors */}
-            {error && <p className=' text-red-600 p-4'>{error}</p>}
-
-            {/* Handle case where no ads are posted yet */}
+            {error && <p className='text-red-600 p-4'>{error}</p>}
             {ads && Object.keys(ads).length === 0 && <p>No ads posted yet.</p>}
 
-            {/* Render ads details */}
             {ads && Object.keys(ads).length > 0 && (
                 <div className='h-full grid grid-cols-2 gap-2'>
-                    {/* Ad name and credits */}
-                    <div className="box col-span-2">Currently showing ad:
+                    <div className="box col-span-2">
+                        Currently showing ad:
                         <div className="flex justify-between items-center">
-                            <span className='text-2xl font-bold text-primary mt-2'> {ads.adName ? ads.adName : "No ad made"} </span>
+                            <span className='text-2xl font-bold text-primary mt-2'>
+                                {ads.adName ? ads.adName : "No ad made"}
+                            </span>
                             <p className='text-sm'>
                                 Credits used:
-                                <span className='ml-2 text-2xl font-bold text-primary'>{ads.creditsDeducted}</span>
+                                <span className='ml-2 text-2xl font-bold text-primary'>
+                                    {totalDeductedCredits}
+                                </span>
                             </p>
                         </div>
                     </div>
@@ -141,12 +149,10 @@ export default function AdDetails() {
                     </div>
 
                     <div className='box col-span-2'>
-                        <AdTriggerTable />
+                        <AdTriggerTable TimelineEntries={TimelineEntries} />
                     </div>
-
                 </div>
             )}
-
         </div>
     );
 }
