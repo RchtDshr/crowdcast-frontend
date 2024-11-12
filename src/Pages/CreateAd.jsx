@@ -132,7 +132,7 @@ export default function CreateAd() {
                 await axios.post('http://localhost:5000/api/remove', { publicId: file.publicId });
             }
 
-            const response = await axios.post('http://localhost:5000/api/upload', formData, {
+            const response = await axios.post('http://localhost:5000/api/upload', formData , {
                 headers: { 'Content-Type': 'multipart/form-data' },
             });
 
@@ -322,7 +322,7 @@ export default function CreateAd() {
                             <input
                                 ref={fileInputRef}
                                 type="file"
-                                name='adFile'
+                                name='adfile'
                                 accept="image/*,video/*"
                                 onChange={handleFileChange}
                                 className="hidden"

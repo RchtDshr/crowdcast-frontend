@@ -1,8 +1,7 @@
 import React from 'react'
-import { Navigate, Outlet } from 'react-router-dom'
+import { Outlet } from 'react-router-dom'
 import SidePanel from '../Components/SidePanel'
 import Navbar from '../Components/Navbar'
-import { isAuthenticated } from '../utils/authUtils'
 
 export default function DashboardLayout() {
   // if (!isAuthenticated()) {
