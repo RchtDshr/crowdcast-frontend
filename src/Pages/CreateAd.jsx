@@ -8,13 +8,13 @@ import 'react-toastify/dist/ReactToastify.css';
 
 
 const ageGroups = [
-    { value: "1", label: "3-9 years old" },
-    { value: "2", label: "10-19 years old" },
-    { value: "3", label: "20-29 years old" },
-    { value: "4", label: "30-39 years old" },
-    { value: "5", label: "40-49 years old" },
-    { value: "6", label: "50-59 years old" },
-    { value: "7", label: "60-70 years old" }
+    { value: "1", label: "2-7 years old" },
+    { value: "2", label: "8-15 years old" },
+    { value: "3", label: "16-24 years old" },
+    { value: "4", label: "25-32 years old" },
+    { value: "5", label: "35-45 years old" },
+    { value: "6", label: "46-53 years old" },
+    { value: "7", label: "60-80 years old" }
 ];
 
 const locations = [
