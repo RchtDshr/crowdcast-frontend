@@ -5,17 +5,17 @@ const MIN_VIDEO_DURATION = 5;
 let adTypePrice=0;
 
 const locationPrices = {
-    "Railway Stations": 50,
-    "Malls": 100,
-    "Airports": 150,
-    "Public Transit": 40,
+    "Railway Stations": 30,
+    "Malls": 50,
+    "Airports": 80,
+    "Public Transit": 30,
     "Gyms and Fitness Centers": 40,
-    "Universities and Colleges": 50,
-    "Restaurants and Cafes": 40,
-    "Healthcare Facilities": 40,
-    "Events and Expos": 150,
-    "Community Centers": 30,
-    "Public Libraries": 30
+    "Universities and Colleges": 40,
+    "Restaurants and Cafes": 30,
+    "Healthcare Facilities": 20,
+    "Events and Expos": 60,
+    "Community Centers": 20,
+    "Public Libraries": 20
 };
 
 const ageGroupMultipliers = {
