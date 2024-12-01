@@ -112,7 +112,12 @@ export default function CreateAd() {
     const handleRemoveFile = async () => {
         try {
             if (file && file.publicId) {
-                await axios.post('http://localhost:5000/api/remove', { publicId: file.publicId });
+                const resourceType = file.type.startsWith('video') ? 'video' : 'image'; // Determine resource type based on file type
+
+                await axios.post('http://localhost:5000/api/remove', {
+                    publicId: file.publicId,
+                    resourceType: resourceType,
+                });
             }
             setFile(null);
             setErrors((prev) => ({ ...prev, file: undefined }));
@@ -121,18 +126,30 @@ export default function CreateAd() {
         }
     };
 
+
     const uploadFile = async (fileToUpload) => {
         try {
             setIsUploading(true);
+            console.log(fileToUpload);
             const formData = new FormData();
             formData.append('file', fileToUpload);
 
-            if (file && file.publicId) {
-                // If there's an existing file, remove it first
-                await axios.post('http://localhost:5000/api/remove', { publicId: file.publicId });
+            try {
+                if (file && file.publicId) {
+                    const resourceType = file.type.startsWith('video') ? 'video' : 'image'; // Determine resource type based on file type
+
+                    await axios.post('http://localhost:5000/api/remove', {
+                        publicId: file.publicId,
+                        resourceType: resourceType,
+                    });
+                }
+                setFile(null);
+                setErrors((prev) => ({ ...prev, file: undefined }));
+            } catch (error) {
+                console.error('Error removing file:', error);
             }
 
-            const response = await axios.post('http://localhost:5000/api/upload', formData , {
+            const response = await axios.post('http://localhost:5000/api/upload', formData, {
                 headers: { 'Content-Type': 'multipart/form-data' },
             });
 
@@ -225,7 +242,7 @@ export default function CreateAd() {
                 {
                     ads: adsData,
                     adName: adName,
-                    type:file.type
+                    type: file.type
                 },
                 {
                     headers: {
@@ -239,7 +256,7 @@ export default function CreateAd() {
                 console.log('Ad submitted successfully:', response.data);
                 setIsModalOpen(false);
                 toast.success('Ad created successfully!', {
-                     position: "bottom-center"
+                    position: "bottom-center"
                 });
                 setAdName('')
                 setFile(null)
@@ -249,13 +266,13 @@ export default function CreateAd() {
             } else {
                 console.error('Failed to submit ad');
                 toast.error('Failed to submit ad', {
-                     position: "bottom-center"
+                    position: "bottom-center"
                 });
             }
         } catch (error) {
             console.error('Error submitting ad:', error);
             toast.error('An error occurred while submitting the ad', {
-                 position: "bottom-center"
+                position: "bottom-center"
             });
         }
     };
@@ -472,10 +489,10 @@ export default function CreateAd() {
             </form>
             {isModalOpen && (
                 <ConfirmAdModal
-                onClose={() => {
-                    setPriceData([]); 
-                    setIsModalOpen(false);
-                }}
+                    onClose={() => {
+                        setPriceData([]);
+                        setIsModalOpen(false);
+                    }}
                     onSubmit={handleConfirmSubmit}
                     priceData={priceData}
                 />
