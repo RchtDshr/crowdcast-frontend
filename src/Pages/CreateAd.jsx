@@ -5,6 +5,7 @@ import axios from 'axios';
 import ConfirmAdModal from '../Components/ConfirmAdModal';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import LoadingSpinner from '../Components/LoadingSpinner';
 
 
 const ageGroups = [
@@ -47,7 +48,7 @@ export default function CreateAd() {
 
     const [isUploading, setIsUploading] = useState(false);
 
-
+    const [isSubmitting, setIsSubmitting] = useState(false);
     const ageGroupRef = useRef(null);
     const locationRef = useRef(null);
     const fileInputRef = useRef(null);
@@ -232,11 +233,13 @@ export default function CreateAd() {
     const token = localStorage.getItem('token'); // or wherever you store your JWT
 
     const handleConfirmSubmit = async () => {
+        setIsModalOpen(false);
+        setIsSubmitting(true); // Start loading
+
         try {
             const adsData = JSON.stringify(priceData);
             console.log(adsData);
             console.log(file);
-            // const adNameData = JSON.stringify(adName);
 
             const response = await axios.post('http://localhost:5000/api/create-ad',
                 {
@@ -258,11 +261,11 @@ export default function CreateAd() {
                 toast.success('Ad created successfully!', {
                     position: "bottom-center"
                 });
-                setAdName('')
-                setFile(null)
-                setSelectedAgeGroups([])
-                setSelectedGenders([])
-                setSelectedLocations([])
+                setAdName('');
+                setFile(null);
+                setSelectedAgeGroups([]);
+                setSelectedGenders([]);
+                setSelectedLocations([]);
             } else {
                 console.error('Failed to submit ad');
                 toast.error('Failed to submit ad', {
@@ -274,8 +277,11 @@ export default function CreateAd() {
             toast.error('An error occurred while submitting the ad', {
                 position: "bottom-center"
             });
+        } finally {
+            setIsSubmitting(false); // Stop loading
         }
     };
+
 
 
 
@@ -498,6 +504,7 @@ export default function CreateAd() {
                 />
             )}
             <ToastContainer />
+            {isSubmitting && <LoadingSpinner />}
         </div>
     );
 }
