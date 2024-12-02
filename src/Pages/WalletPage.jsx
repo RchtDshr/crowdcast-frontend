@@ -54,6 +54,7 @@ const WalletPage = () => {
   }, []);
 
   return (
+    <>
     <div className="box z-0 w-[79vw]">
       <p className="text-lg">
         Current Wallet Balance:
@@ -74,12 +75,13 @@ const WalletPage = () => {
             placeholder="Enter amount to add in balance"
           />
         </div>
-        <button type="submit" className="submit-button btn mt-2">
-          Add Money
-        </button>
       </form>
       <ToastContainer />
     </div>
+        <button type="submit" className="submit-button btn mt-2">
+          Add Money
+        </button>
+        </>
   );
 };
 
