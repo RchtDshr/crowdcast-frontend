@@ -44,7 +44,7 @@ export default function SignUp() {
             return;
         }
         try {
-            const response = await axios.post('http://localhost:5000/user/signup', signupCredentials);
+            const response = await axios.post('https://crowdcast-backend.vercel.app/user/signup', signupCredentials);
 
             if (response.data.message === 'User registered. Please verify your email.') {
                 navigate('/verify-otp', { state: { email: signupCredentials.email } });

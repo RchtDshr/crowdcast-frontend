@@ -115,7 +115,7 @@ export default function CreateAd() {
             if (file && file.publicId) {
                 const resourceType = file.type.startsWith('video') ? 'video' : 'image'; // Determine resource type based on file type
 
-                await axios.post('http://localhost:5000/api/remove', {
+                await axios.post('https://crowdcast-backend.vercel.app/api/remove', {
                     publicId: file.publicId,
                     resourceType: resourceType,
                 });
@@ -139,7 +139,7 @@ export default function CreateAd() {
                 if (file && file.publicId) {
                     const resourceType = file.type.startsWith('video') ? 'video' : 'image'; // Determine resource type based on file type
 
-                    await axios.post('http://localhost:5000/api/remove', {
+                    await axios.post('https://crowdcast-backend.vercel.app/api/remove', {
                         publicId: file.publicId,
                         resourceType: resourceType,
                     });
@@ -150,7 +150,7 @@ export default function CreateAd() {
                 console.error('Error removing file:', error);
             }
 
-            const response = await axios.post('http://localhost:5000/api/upload', formData, {
+            const response = await axios.post('https://crowdcast-backend.vercel.app/api/upload', formData, {
                 headers: { 'Content-Type': 'multipart/form-data' },
             });
 
@@ -241,7 +241,7 @@ export default function CreateAd() {
             console.log(adsData);
             console.log(file);
 
-            const response = await axios.post('http://localhost:5000/api/create-ad',
+            const response = await axios.post('https://crowdcast-backend.vercel.app/api/create-ad',
                 {
                     ads: adsData,
                     adName: adName,

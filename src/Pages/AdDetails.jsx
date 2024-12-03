@@ -30,7 +30,7 @@ export default function AdDetails() {
       if (!token) {
         throw new Error("No token found. Please log in.");
       }
-      const response = await axios.get("http://localhost:5000/api/getdetails", {
+      const response = await axios.get("https://crowdcast-backend.vercel.app/api/getdetails", {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -48,7 +48,7 @@ export default function AdDetails() {
         throw new Error("No token found. Please log in.");
       }
       const response = await axios.get(
-        "http://localhost:5000/user/getUserTimeline",
+        "https://crowdcast-backend.vercel.app/user/getUserTimeline",
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -70,7 +70,7 @@ export default function AdDetails() {
       if (!token) {
         throw new Error("No token found. Please log in.");
       }
-      const response = await axios.delete("http://localhost:5000/api/delete", {
+      const response = await axios.delete("https://crowdcast-backend.vercel.app/api/delete", {
         headers: {
           Authorization: `Bearer ${token}`,
         },

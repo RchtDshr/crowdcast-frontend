@@ -15,7 +15,7 @@ const WalletPage = () => {
 
     try {
       const response = await axios.post(
-        "http://localhost:5000/user/addCredits",
+        "https://crowdcast-backend.vercel.app/user/addCredits",
         {
           userId,
           credits: parseFloat(amount),
@@ -62,7 +62,7 @@ const WalletPage = () => {
           {credit}
         </span>
       </p>
-      <form onSubmit={handleAddFunds}>
+      <form>
         <div className="flex items-center gap-2">
           <input
             type="number"
@@ -76,12 +76,12 @@ const WalletPage = () => {
           />
         </div>
       </form>
-      <ToastContainer />
     </div>
-        <button type="submit" className="submit-button btn mt-2">
+        <button onClick={handleAddFunds} type="submit" className="submit-button btn mt-2">
           Add Money
         </button>
-        </>
+      <ToastContainer />
+      </>
   );
 };
 

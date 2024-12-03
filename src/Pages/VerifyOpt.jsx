@@ -16,7 +16,7 @@ export default function VerifyOTP() {
   const handleVerifyOTPSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await axios.post('http://localhost:5000/user/verify-otp', {
+      const response = await axios.post('https://crowdcast-backend.vercel.app/user/verify-otp', {
         email: verifyotp.email,
         otp: verifyotp.otp
       });

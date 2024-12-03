@@ -11,7 +11,7 @@ export const setAuthToken = (token) => {
 export async function getCurrentUser(token) {
   try {
 
-    const response = await fetch('http://localhost:5000/user/getUser', {
+    const response = await fetch('https://crowdcast-backend.vercel.app/user/getUser', {
       method: 'GET',
       headers: {
         'Authorization': `Bearer ${token}`,
@@ -34,7 +34,7 @@ export async function getCurrentUser(token) {
 
 export async function addCredits(token, credits) {
   try {
-    const response = await fetch('http://localhost:5000/user/addCredits', {
+    const response = await fetch('https://crowdcast-backend.vercel.app/user/addCredits', {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${token}`,
